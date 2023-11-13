@@ -1,0 +1,16 @@
+.statisticCard {
+  padding: 10px;
+  .detail {
+    margin-top: 14px;
+    font-size: 12px;
+    .up {
+      color: #008000;
+    }
+    .down {
+      color: #ff0000;
+    }
+    .dateRange {
+      color: gray;
+    }
+  }
+}

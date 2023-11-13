@@ -1,0 +1,60 @@
+.dashboardLayout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: row;
+  .open {
+    overflow: hidden;
+    flex: 0 0 200px;
+    max-width: 200px;
+    min-width: 200px;
+    width: 200px;
+    transition: all 0.2s;
+  }
+  .close {
+    overflow: hidden;
+    flex: 0 0 80px;
+    max-width: 80px;
+    min-width: 80px;
+    width: 80px;
+    transition: all 0.2s;
+  }
+  .sider {
+    overflow: hidden auto !important;
+    background: #fff !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 100 !important;
+    height: 100% !important;
+    box-shadow: 2px 0 8px 0 rgba(29, 35, 41, 0.05) !important;
+
+    .logo {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 48px;
+    }
+  }
+  .siteLayout {
+    .header {
+      display: flex;
+      justify-content: space-between;
+      padding: 0 10px;
+      align-items: center;
+      height: 48px;
+      .avatar {
+        background-color: #fff;
+        color: #000;
+      }
+    }
+    .content {
+      padding: 10px;
+    }
+    .footer {
+      text-align: center;
+      .text {
+        color: gray;
+      }
+    }
+  }
+}
