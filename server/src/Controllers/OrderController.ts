@@ -2,17 +2,20 @@
 
 import { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status-codes';
-import { Order } from '../types/order.type';
 import { formatDateToDDMonthYYYY } from '../utils/date';
 import {
   createNewInvoice,
   getRowsByPropertyName,
   getRowsObject,
+  getValue,
 } from '../utils/googleSheets';
 import {
   initializeGoogleSheets,
   loadSheetByTitle,
 } from '../middlewares/googleSheets';
+import { Order, RawOrder } from '../types/Order.model';
+import { rawOrderToOrder } from '../utils/objectManipulation';
+import { RawMenu } from '../types/Menu.model';
 
 export class OrderController {
   public static async getAllOrders(
@@ -22,11 +25,18 @@ export class OrderController {
   ): Promise<void> {
     try {
       const doc = await initializeGoogleSheets();
-      const sheet = await loadSheetByTitle(doc, 'Order');
-      const rows = getRowsObject(await sheet.getRows<Order>());
+      const orderSheet = await loadSheetByTitle(doc, 'Order', 2);
+      const menuSheet = await loadSheetByTitle(doc, 'Menu');
+      const menuRows: Partial<RawMenu>[] = getRowsObject(
+        await menuSheet.getRows<RawMenu>(),
+      );
+      const orderRows: Partial<RawOrder>[] = getRowsObject(
+        await orderSheet.getRows<RawOrder>(),
+      );
+      const orders: Order[] = rawOrderToOrder(orderRows, menuRows);
 
       res.send({
-        data: rows,
+        data: orders,
         message: 'Successfully get all orders',
         status: 'success',
       });
@@ -40,13 +50,13 @@ export class OrderController {
     res: Response,
     next: NextFunction,
   ): Promise<void> {
-    const invoice = req.params.invoice;
+    const invoice: string = req.params.invoice;
     try {
       const doc = await initializeGoogleSheets();
-      const sheet = await loadSheetByTitle(doc, 'Order');
-      const requestedOrder = getRowsObject(await sheet.getRows<Order>())?.find(
-        (row: Order) => row.Invoice === invoice,
-      );
+      const sheet = await loadSheetByTitle(doc, 'Order', 2);
+      const requestedOrder = getRowsObject<RawOrder>(
+        await sheet.getRows<RawOrder>(),
+      )?.find((row): boolean => row.Invoice === invoice);
       if (requestedOrder === undefined) {
         throw {
           name: 'Not Found',
@@ -69,13 +79,15 @@ export class OrderController {
     res: Response,
     next: NextFunction,
   ): Promise<void> {
-    const newOrder = req.body.data as Order;
+    const newOrder = req.body.data as RawOrder;
     newOrder['Order Date'] = formatDateToDDMonthYYYY(new Date());
     try {
       const doc = await initializeGoogleSheets();
-      const sheet = await loadSheetByTitle(doc, 'Order');
-      const orders = getRowsObject(await sheet.getRows<Order>());
-      const existingInvoiceNumbers = orders.map((order) => order['Invoice']);
+      const sheet = await loadSheetByTitle(doc, 'Order', 2);
+      const orders = getRowsObject<RawOrder>(await sheet.getRows<Order>());
+      const existingInvoiceNumbers = orders.map((order) =>
+        getValue(order['Invoice']),
+      );
       if (newOrder.Invoice === undefined || newOrder.Invoice === '') {
         const newInvoice = createNewInvoice(existingInvoiceNumbers);
         newOrder.Invoice = newInvoice;
@@ -90,7 +102,7 @@ export class OrderController {
         newOrder.Invoice = newInvoice;
       }
 
-      const existingOrder: Partial<Order> | undefined = orders.find(
+      const existingOrder = orders.find(
         (row) => row['Invoice'] === newOrder.Invoice,
       );
       if (existingOrder !== undefined) {
@@ -117,11 +129,11 @@ export class OrderController {
     next: NextFunction,
   ): Promise<void> {
     const invoice = req.params.invoice;
-    const updateOrder = req.body.data as Order;
+    const updateOrder = req.body.data as RawOrder;
     try {
       const doc = await initializeGoogleSheets();
-      const sheet = await loadSheetByTitle(doc, 'Order');
-      const rawRows = await sheet.getRows<Order>();
+      const sheet = await loadSheetByTitle(doc, 'Order', 2);
+      const rawRows = await sheet.getRows<RawOrder>();
       const requestedOrder = getRowsByPropertyName(
         rawRows,
         'Invoice',
@@ -135,9 +147,9 @@ export class OrderController {
       }
 
       if (invoice !== updateOrder.Invoice) {
-        const existingOrder: Partial<Order> | undefined = getRowsObject(
-          rawRows,
-        ).find((row) => row['Invoice'] === updateOrder.Invoice);
+        const existingOrder = getRowsObject<RawOrder>(rawRows).find(
+          (row) => row.Invoice === updateOrder.Invoice,
+        );
         if (existingOrder !== undefined) {
           throw {
             name: 'Bad Request',
@@ -169,9 +181,9 @@ export class OrderController {
     const invoice = req.params.invoice;
     try {
       const doc = await initializeGoogleSheets();
-      const sheet = await loadSheetByTitle(doc, 'Order');
+      const sheet = await loadSheetByTitle(doc, 'Order', 2);
       const requestedOrder = getRowsByPropertyName(
-        await sheet.getRows<Order>(),
+        await sheet.getRows<RawOrder>(),
         'Invoice',
         invoice,
       )[0];

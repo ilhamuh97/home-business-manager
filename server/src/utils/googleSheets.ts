@@ -2,9 +2,9 @@
 
 import { GoogleSpreadsheetRow } from 'google-spreadsheet';
 
-export function getRowsObject(
+export function getRowsObject<T>(
   rows: GoogleSpreadsheetRow<any>[],
-): Partial<any>[] {
+): Partial<T>[] {
   return rows.map((row) => row.toObject());
 }
 
@@ -54,4 +54,8 @@ export function createNewInvoice(
     .padStart(2, '0')}${nextOrderNumber.toString().padStart(3, '0')}`;
 
   return nextInvoiceNumber;
+}
+
+export function getValue(string: string | undefined): string {
+  return string || '';
 }

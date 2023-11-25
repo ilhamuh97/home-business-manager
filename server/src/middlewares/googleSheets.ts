@@ -26,11 +26,12 @@ export async function initializeGoogleSheets(): Promise<GoogleSpreadsheet> {
 export async function loadSheetByTitle(
   doc: GoogleSpreadsheet,
   sheetTitle: string,
+  headerRow: number = 1,
 ): Promise<GoogleSpreadsheetWorksheet> {
   const sheet = doc.sheetsByTitle[sheetTitle];
   if (!sheet) {
     throw new Error(`Sheet '${sheetTitle}' not found`);
   }
-  await sheet.loadHeaderRow(2);
+  await sheet.loadHeaderRow(headerRow);
   return sheet;
 }
