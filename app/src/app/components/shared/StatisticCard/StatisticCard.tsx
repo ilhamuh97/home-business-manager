@@ -8,7 +8,6 @@ type StatisticCardProps = {
   value?: number;
   suffix?: string;
   percentage?: number;
-  up?: boolean;
   dateRange?: string;
 };
 
@@ -17,9 +16,9 @@ const StatisticCard = ({
   value,
   suffix,
   percentage,
-  up,
   dateRange,
 }: StatisticCardProps) => {
+  const up = (percentage || 0) >= 0;
   const getDateRangeString = (dateRange: string = "monthly") => {
     switch (dateRange) {
       case "daily":
@@ -44,7 +43,7 @@ const StatisticCard = ({
             <ArrowDownOutlined className={styles.down} />
           )}{" "}
           <Typography.Text className={up ? styles.up : styles.down}>
-            {percentage}%
+            {Math.abs(percentage || 0)}%
           </Typography.Text>{" "}
           <Typography.Text className={styles.dateRange}>
             {getDateRangeString(dateRange)}

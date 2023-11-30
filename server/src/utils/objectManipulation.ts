@@ -44,7 +44,7 @@ export function rawOrderToOrder(
       Nr: orderNumber = '',
       Discount: orderDiscount = '',
       Shipping: orderShipping = '',
-      TotalPrice: orderPrice = '',
+      'Total Price': orderPrice = '',
       Packaging: orderPackaging = '',
       Invoice: invoice = '',
       Name: customerName = '',

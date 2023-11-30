@@ -1,5 +1,6 @@
 import { SettingOutlined, BarChartOutlined } from "@ant-design/icons";
 
+export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_DEV;
 export const sidebarItems = [
   {
     key: "dashboard",
@@ -8,7 +9,7 @@ export const sidebarItems = [
     children: [
       {
         key: "/admin/dashboard",
-        label: "Analysis",
+        label: "Overview",
       },
       {
         key: "/admin/order",
