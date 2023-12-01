@@ -34,7 +34,6 @@ export class OrderController {
         await orderSheet.getRows<RawOrder>(),
       );
       const orders: Order[] = rawOrderToOrder(orderRows, menuRows);
-
       res.send({
         data: orders,
         message: 'Successfully get all orders',

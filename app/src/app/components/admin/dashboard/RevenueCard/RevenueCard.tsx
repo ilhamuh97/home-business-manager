@@ -2,16 +2,24 @@ import { Card, Radio } from "antd";
 import React from "react";
 import MyChart from "@/app/components/shared/MyChart/MyChart";
 import moment from "moment";
+import { IOrder } from "@/app/models/order.model";
 
 interface IProps {
-  data: any[];
+  data: IOrder[];
+}
+
+interface IRevenueData {
+  name: string;
+  data: number[];
 }
 
 const RevenueCard = (props: IProps) => {
   const revenueData = () => {
     const thisYear = moment().startOf("year");
-    let resultArray: any[] = [];
-    const data = props.data; // Assuming orders is defined somewhere
+    let resultArray: IRevenueData[] = [];
+    const data = props.data.filter(
+      (order) => order.extraInformation.feedback === "done",
+    );
 
     for (
       let beginYear = thisYear.clone().subtract(1, "year");
@@ -88,16 +96,21 @@ const RevenueCard = (props: IProps) => {
   };
 
   return (
-    <Card title="Revenue in (K)" size="small">
-      <Radio.Group style={{ marginBottom: 8 }} defaultValue={"monthly"}>
+    <Card title="Revenue report in (K)" size="small">
+      <Radio.Group
+        style={{ marginBottom: 8 }}
+        defaultValue={"monthly"}
+        size="small"
+      >
+        <Radio.Button value="weekly">Weekly</Radio.Button>
         <Radio.Button value="monthly">Monthly</Radio.Button>
-        <Radio.Button value="anually">Anually</Radio.Button>
+        <Radio.Button value="annually">Annually</Radio.Button>
       </Radio.Group>
       <MyChart
         options={chartData.options}
         series={chartData.series}
         type="area"
-        height={200}
+        height={300}
         width={"100%"}
       />
     </Card>

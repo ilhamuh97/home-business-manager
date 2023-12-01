@@ -54,7 +54,7 @@ export function rawOrderToOrder(
       'Shipment Date': shipmentDate = '',
       'Payment Method': paymentMethod = '',
       Information: extraInformation = '',
-      FeedBack: feedback = '',
+      Feedback: feedback = '',
     } = order;
 
     return {
@@ -78,7 +78,7 @@ export function rawOrderToOrder(
       extraInformation: {
         courier: orderDiscount,
         information: extraInformation,
-        feedBack: feedback,
+        feedback,
       },
     };
   });

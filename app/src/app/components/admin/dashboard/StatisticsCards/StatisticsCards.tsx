@@ -1,30 +1,25 @@
 import { Col } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import StatisticCard from "@/app/components/shared/StatisticCard/StatisticCard";
 import moment from "moment";
+import { getFilteredOrder } from "@/app/utils/order";
+import { IOrder } from "@/app/models/order.model";
+import { IMenu } from "@/app/models/menu.model";
 
 interface IProps {
-  ordersCurrYear: any[];
+  ordersCurrYear: IOrder[];
 }
 
 const StatisticsCards = (props: IProps) => {
-  const { ordersCurrYear } = props;
+  const ordersCurrYear = props.ordersCurrYear.filter(
+    (order) => order.extraInformation.feedback === "done",
+  );
   const GRANULARITY: moment.unitOfTime.StartOf | undefined = "month";
-  const CURR_DATE = moment().add(1, GRANULARITY);
-  const OLD_DATE = moment();
-
-  const getFilteredOrder = (
-    ordersCurrYear: any[],
-    date: moment.Moment,
-    granularity: moment.unitOfTime.StartOf | undefined,
-  ) => {
-    return ordersCurrYear.filter((order) =>
-      moment(order.shipmentDate).isSame(date, granularity),
-    );
-  };
+  const CURR_DATE = moment();
+  const OLD_DATE = CURR_DATE.clone().subtract(1, GRANULARITY);
 
   const getOrdersNumberOfMonth = (
-    ordersCurrYear: any[],
+    ordersCurrYear: IOrder[],
     date: moment.Moment,
   ) => {
     if (ordersCurrYear.length === 0) {
@@ -39,7 +34,7 @@ const StatisticsCards = (props: IProps) => {
   };
 
   const getOrderedMenusNumberOfMonth = (
-    ordersCurrYear: any[],
+    ordersCurrYear: IOrder[],
     date: moment.Moment,
   ) => {
     if (ordersCurrYear.length === 0) {
@@ -54,7 +49,7 @@ const StatisticsCards = (props: IProps) => {
       return (
         total +
         order.menu.reduce(
-          (menuTotal: number, menu: any) => menuTotal + menu.quantity,
+          (menuTotal: number, menu: IMenu) => menuTotal + menu.quantity,
           0,
         )
       );
@@ -64,7 +59,7 @@ const StatisticsCards = (props: IProps) => {
   };
 
   const getRevenueOfMonth = (
-    ordersCurrYear: any[],
+    ordersCurrYear: IOrder[],
     date: moment.Moment,
   ): number => {
     if (ordersCurrYear.length === 0) {
@@ -80,7 +75,7 @@ const StatisticsCards = (props: IProps) => {
   };
 
   const getCustomersNumber = (
-    ordersCurrYear: any[],
+    ordersCurrYear: IOrder[],
     date: moment.Moment,
   ): number => {
     if (ordersCurrYear.length === 0) {
@@ -119,24 +114,26 @@ const StatisticsCards = (props: IProps) => {
       </Col>
       <Col span={6}>
         <StatisticCard
-          title="Orders"
+          title="Invoices"
           value={getOrdersNumberOfMonth(ordersCurrYear, CURR_DATE)}
           percentage={getPercentageIncrease(
             getOrdersNumberOfMonth(ordersCurrYear, CURR_DATE),
             getOrdersNumberOfMonth(ordersCurrYear, OLD_DATE),
           )}
           dateRange="monthly"
+          redirect="/admin/order"
         />
       </Col>
       <Col span={6}>
         <StatisticCard
-          title="Ordered Menus"
+          title="Total menus"
           value={getOrderedMenusNumberOfMonth(ordersCurrYear, CURR_DATE)}
           percentage={getPercentageIncrease(
             getOrderedMenusNumberOfMonth(ordersCurrYear, CURR_DATE),
             getOrderedMenusNumberOfMonth(ordersCurrYear, OLD_DATE),
           )}
           dateRange="monthly"
+          redirect="/admin/menu"
         />
       </Col>
       <Col span={6}>
@@ -148,6 +145,7 @@ const StatisticsCards = (props: IProps) => {
             getCustomersNumber(ordersCurrYear, OLD_DATE),
           )}
           dateRange="monthly"
+          redirect="/admin/customer"
         />
       </Col>
     </>

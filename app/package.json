@@ -13,13 +13,17 @@
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "antd": "^5.11.1",
     "apexcharts": "^3.44.0",
+    "dayjs": "^1.11.10",
     "eslint-config-prettier": "^9.0.0",
     "next": "14.0.2",
+    "npm": "^10.2.4",
     "prettier": "^3.0.3",
     "react": "^18",
     "react-apexcharts": "^1.4.1",
     "react-dom": "^18",
-    "sass": "^1.69.5"
+    "run": "^1.4.0",
+    "sass": "^1.69.5",
+    "start": "^5.1.0"
   },
   "devDependencies": {
     "@types/node": "^20",

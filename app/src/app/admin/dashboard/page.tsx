@@ -6,10 +6,14 @@ import { Col, Row, Spin, message } from "antd";
 import RevenueCard from "@/app/components/admin/dashboard/RevenueCard/RevenueCard";
 import StatisticsCards from "@/app/components/admin/dashboard/StatisticsCards/StatisticsCards";
 import { getOrders } from "@/services/dashboard.service";
+import BestSellerCard from "@/app/components/admin/dashboard/BestSellerCard/BestSellerCard";
+import OngoingOrdersCard from "@/app/components/admin/dashboard/OngoingOrdersCard/OngoingOrdersCard";
+import LoyalCustomersCard from "@/app/components/admin/dashboard/LoyalCustomersCard/LoyalCustomersCard";
+import { IOrder } from "@/app/models/order.model";
 
 export default function Home() {
-  const [orders, setOrders] = useState<any[]>([]);
-  const [ordersCurrYear, setOrdersCurrYear] = useState<any[]>([]);
+  const [orders, setOrders] = useState<IOrder[]>([]);
+  const [ordersCurrYear, setOrdersCurrYear] = useState<IOrder[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -20,7 +24,7 @@ export default function Home() {
         const ordersResult = await data.json();
         const orderData = ordersResult.data;
         const currYear = moment();
-        const filteredOrder = orderData.filter((order: any) => {
+        const filteredOrder = orderData.filter((order: IOrder) => {
           const orderDate = moment(order.shipmentDate);
           return orderDate.isSame(currYear, "year");
         });
@@ -42,8 +46,17 @@ export default function Home() {
       <Spin tip="Loading" size="small" spinning={isLoading}>
         <Row gutter={[10, 10]}>
           <StatisticsCards ordersCurrYear={ordersCurrYear} />
-          <Col span={24}>
+          <Col span={16}>
             <RevenueCard data={orders} />
+          </Col>
+          <Col span={8}>
+            <BestSellerCard ordersCurrYear={ordersCurrYear} />
+          </Col>
+          <Col span={12}>
+            <OngoingOrdersCard orders={orders} />
+          </Col>
+          <Col span={12}>
+            <LoyalCustomersCard orders={orders} />
           </Col>
         </Row>
       </Spin>
