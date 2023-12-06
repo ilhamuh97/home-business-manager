@@ -67,7 +67,14 @@ const OngoingOrdersCard = (props: IProps) => {
   ];
   return (
     <Card title={`Ongoing orders ${dataSourceNumber(dataSource)}`} size="small">
-      <Table dataSource={dataSource} columns={columns} size="small" />
+      <Table
+        dataSource={dataSource}
+        columns={columns}
+        size="small"
+        pagination={{
+          pageSize: 5,
+        }}
+      />
     </Card>
   );
 };

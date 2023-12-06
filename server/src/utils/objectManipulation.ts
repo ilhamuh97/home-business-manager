@@ -1,3 +1,4 @@
+import { Customer, RawCustomer } from '../types/Customer.model';
 import { Menu, RawMenu } from '../types/Menu.model';
 import { RawOrder, Order } from '../types/Order.model';
 
@@ -32,6 +33,30 @@ export function menusForOrder(
           parseFloat(isNormalInvoice ? menuNormalPrice : menuCafePrice) || 0,
       } as Menu;
     });
+}
+
+export function rawCustomersToCustomer(
+  rawCustomers: Partial<RawCustomer>[],
+): Customer[] {
+  return rawCustomers.map((rawCustomer: RawCustomer) => {
+    const {
+      Name: name = '',
+      Address: address = '',
+      'Phone Number': phoneNumber = '',
+      'Join Date': joinDate = '',
+      'Last Order': lastOrder = '',
+      'Total Invoices': totalInvoices = '',
+    } = rawCustomer;
+
+    return {
+      name: name,
+      phoneNumber,
+      address,
+      joinDate,
+      lastOrder,
+      totalInvoices: parseInt(totalInvoices) || 0,
+    };
+  });
 }
 
 export function rawOrderToOrder(

@@ -1,53 +1,24 @@
+import { ICustomer } from "@/app/models/customer.model";
 import { IOrder } from "@/app/models/order.model";
 import { Card, Table } from "antd";
 import React from "react";
 
 interface IProps {
-  orders: IOrder[];
+  customers: ICustomer[];
 }
 
 const LoyalCustomersCard = (props: IProps) => {
   // TODO: Use real data
-  const orders = props.orders;
-
-  const dataSource = [
-    {
-      key: "1",
-      name: "Mike Thompson",
-      phoneNumber: "1 555-0123",
-      lastOrder: "18 November 2023",
-      totalInvoices: 21,
-    },
-    {
-      key: "2",
-      name: "John Wick",
-      phoneNumber: "1 555-8901",
-      lastOrder: "23 November 2023",
-      totalInvoices: 20,
-    },
-    {
-      key: "3",
-      name: "Xander Crystalheart",
-      phoneNumber: "1 555-0123",
-      lastOrder: "25 November 2023",
-      totalInvoices: 15,
-    },
-    {
-      key: "4",
-      name: "Luna Skydancer",
-      phoneNumber: "1 555-8901",
-      lastOrder: "10 November 2023",
-      totalInvoices: 10,
-    },
-    {
-      key: "5",
-      name: "Aurora Silverwing",
-      phoneNumber: "1 555-0123",
-      lastOrder: "5 November 2023",
-      totalInvoices: 10,
-    },
-  ];
-
+  const customers = props.customers;
+  const dataSource = customers
+    .sort((a, b) => b.totalInvoices - a.totalInvoices)
+    .map((customer) => {
+      return {
+        key: customer.phoneNumber,
+        ...customer,
+      };
+    });
+  console.log(dataSource);
   const columns = [
     {
       title: "Name",
@@ -72,7 +43,14 @@ const LoyalCustomersCard = (props: IProps) => {
   ];
   return (
     <Card title="Loyal customers" size="small">
-      <Table dataSource={dataSource} columns={columns} size="small" />
+      <Table
+        dataSource={dataSource}
+        columns={columns}
+        size="small"
+        pagination={{
+          pageSize: 5,
+        }}
+      />
     </Card>
   );
 };

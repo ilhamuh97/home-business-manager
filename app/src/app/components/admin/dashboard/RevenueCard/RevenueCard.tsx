@@ -1,5 +1,5 @@
-import { Card, Radio } from "antd";
-import React from "react";
+import { Card, Radio, RadioChangeEvent } from "antd";
+import React, { useState } from "react";
 import MyChart from "@/app/components/shared/MyChart/MyChart";
 import moment from "moment";
 import { IOrder } from "@/app/models/order.model";
@@ -13,7 +13,17 @@ interface IRevenueData {
   data: number[];
 }
 
+enum RevenuDateRange {
+  WEEKLY = "weekly",
+  MONTHLY = "monthly",
+  ANNUALLY = "annually",
+}
+
 const RevenueCard = (props: IProps) => {
+  const [selectedDateRange, setSelectedDateRange] = useState<RevenuDateRange>(
+    RevenuDateRange.MONTHLY,
+  );
+
   const revenueData = () => {
     const thisYear = moment().startOf("year");
     let resultArray: IRevenueData[] = [];
@@ -95,24 +105,68 @@ const RevenueCard = (props: IProps) => {
     },
   };
 
+  const handleChange = (e: RadioChangeEvent) => {
+    switch (e.target.value) {
+      case RevenuDateRange.WEEKLY:
+        setSelectedDateRange(RevenuDateRange.WEEKLY);
+        break;
+      case RevenuDateRange.MONTHLY:
+        setSelectedDateRange(RevenuDateRange.MONTHLY);
+        break;
+      case RevenuDateRange.ANNUALLY:
+        setSelectedDateRange(RevenuDateRange.ANNUALLY);
+        break;
+    }
+  };
+
+  const getMyChart = (selectedDateRange: RevenuDateRange) => {
+    switch (selectedDateRange) {
+      case RevenuDateRange.WEEKLY:
+        return (
+          <MyChart
+            options={chartData.options}
+            series={chartData.series}
+            type="area"
+            height={300}
+            width={"100%"}
+          />
+        );
+      case RevenuDateRange.MONTHLY:
+        return (
+          <MyChart
+            options={chartData.options}
+            series={chartData.series}
+            type="area"
+            height={300}
+            width={"100%"}
+          />
+        );
+      case RevenuDateRange.ANNUALLY:
+        return (
+          <MyChart
+            options={chartData.options}
+            series={chartData.series}
+            type="area"
+            height={300}
+            width={"100%"}
+          />
+        );
+    }
+  };
+
   return (
     <Card title="Revenue report in (K)" size="small">
       <Radio.Group
         style={{ marginBottom: 8 }}
-        defaultValue={"monthly"}
+        defaultValue={selectedDateRange}
         size="small"
+        onChange={handleChange}
       >
         <Radio.Button value="weekly">Weekly</Radio.Button>
         <Radio.Button value="monthly">Monthly</Radio.Button>
         <Radio.Button value="annually">Annually</Radio.Button>
       </Radio.Group>
-      <MyChart
-        options={chartData.options}
-        series={chartData.series}
-        type="area"
-        height={300}
-        width={"100%"}
-      />
+      {getMyChart(selectedDateRange)}
     </Card>
   );
 };

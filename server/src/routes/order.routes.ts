@@ -3,12 +3,12 @@
 import { Router } from 'express';
 import { OrderController } from '../Controllers/OrderController';
 
-const router = Router();
+const orderRoutes = Router();
 
-router.get('/', OrderController.getAllOrders);
-router.get('/order/:invoice', OrderController.getOrderByInvoice);
-router.post('/order', OrderController.createOrder);
-router.put('/order/:invoice', OrderController.updateOrderByInvoice);
-router.delete('/order/:invoice', OrderController.deleteOrderByInvoice);
+orderRoutes.get('/', OrderController.getAllOrders);
+orderRoutes.get('/order/:invoice', OrderController.getOrderByInvoice);
+orderRoutes.post('/order', OrderController.createOrder);
+orderRoutes.put('/order/:invoice', OrderController.updateOrderByInvoice);
+orderRoutes.delete('/order/:invoice', OrderController.deleteOrderByInvoice);
 
-export default router;
+export default orderRoutes;
