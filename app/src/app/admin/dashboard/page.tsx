@@ -1,8 +1,7 @@
 "use client";
 
-import moment from "moment";
 import { useEffect, useState } from "react";
-import { Col, Row, Spin, message } from "antd";
+import { Col, Row, Spin, Typography, message } from "antd";
 import RevenueCard from "@/app/components/admin/dashboard/RevenueCard/RevenueCard";
 import StatisticsCards from "@/app/components/admin/dashboard/StatisticsCards/StatisticsCards";
 import { getCustomers, getOrders } from "@/services/dashboard.service";
@@ -11,6 +10,7 @@ import OngoingOrdersCard from "@/app/components/admin/dashboard/OngoingOrdersCar
 import LoyalCustomersCard from "@/app/components/admin/dashboard/LoyalCustomersCard/LoyalCustomersCard";
 import { IOrder } from "@/app/models/order.model";
 import { ICustomer } from "@/app/models/customer.model";
+import dayjs from "dayjs";
 
 export default function Home() {
   const [orders, setOrders] = useState<IOrder[]>([]);
@@ -20,25 +20,33 @@ export default function Home() {
 
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
       try {
-        const dataForOrder = await getOrders();
-        const dataForCustomer = await getCustomers();
-        const ordersResult = await dataForOrder.json();
-        const customerResult = await dataForCustomer.json();
+        setIsLoading(true);
+
+        const [orderResponse, customerResponse] = await Promise.all([
+          getOrders(),
+          getCustomers(),
+        ]);
+
+        const ordersResult = await orderResponse.json();
+        const customerResult = await customerResponse.json();
+
         const orderData: IOrder[] = ordersResult.data;
         const customerData: ICustomer[] = customerResult.data;
-        const currYear = moment();
-        const filteredOrder: IOrder[] = orderData.filter((order: IOrder) => {
-          const orderDate = moment(order.shipmentDate);
-          return orderDate.isSame(currYear, "year");
-        });
+
+        const currYear = dayjs();
+
+        const filteredOrder: IOrder[] = orderData.filter((order: IOrder) =>
+          dayjs(order.orderDate).isSame(currYear, "year"),
+        );
+
         setOrders(orderData);
         setCustomers(customerData);
         setOrdersCurrYear(filteredOrder);
-        setIsLoading(false);
       } catch (error: any) {
         message.error(error.message);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -50,6 +58,7 @@ export default function Home() {
   return (
     <main>
       <Spin tip="Loading" size="small" spinning={isLoading}>
+        <Typography.Title level={5}>Overview</Typography.Title>
         <Row gutter={[10, 10]}>
           <StatisticsCards ordersCurrYear={ordersCurrYear} />
           <Col span={16}>

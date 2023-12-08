@@ -7,6 +7,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { UserOutlined } from "@ant-design/icons";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { sidebarItems } from "@/constants/sidebarItems";
+import { MdFoodBank } from "react-icons/md";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -36,8 +37,8 @@ export default function AboutLayout({
         collapsed={collapsed}
         onCollapse={(value) => setCollapsed(value)}
       >
-        <div className={styles.logo}>
-          <UserOutlined />
+        <div className={`${styles.logo} ${collapsed ? styles.closed : ""}`}>
+          <MdFoodBank />
         </div>
         <Menu
           mode="inline"

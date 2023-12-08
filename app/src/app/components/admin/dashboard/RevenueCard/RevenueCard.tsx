@@ -1,8 +1,14 @@
 import { Card, Radio, RadioChangeEvent } from "antd";
-import React, { useState } from "react";
-import MyChart from "@/app/components/shared/MyChart/MyChart";
-import moment from "moment";
+import React, { useCallback, useEffect, useState } from "react";
 import { IOrder } from "@/app/models/order.model";
+import dayjs from "dayjs";
+import weekOfYear from "dayjs/plugin/weekOfYear"; // import plugin
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore"; // import plugin
+import MonthlyChart from "./MonthlyChart/MonthlyChart";
+import WeeklyChart from "./WeeklyChart/WeeklyChart";
+
+dayjs.extend(weekOfYear);
+dayjs.extend(isSameOrBefore);
 
 interface IProps {
   data: IOrder[];
@@ -11,6 +17,11 @@ interface IProps {
 interface IRevenueData {
   name: string;
   data: number[];
+}
+
+interface ISeriesAndCategories {
+  series: IRevenueData[];
+  categories: any;
 }
 
 enum RevenuDateRange {
@@ -23,132 +34,153 @@ const RevenueCard = (props: IProps) => {
   const [selectedDateRange, setSelectedDateRange] = useState<RevenuDateRange>(
     RevenuDateRange.MONTHLY,
   );
+  const [monthlyData, setMonthlyData] = useState<ISeriesAndCategories>({
+    series: [],
+    categories: [],
+  });
+  const [weeklyData, setWeeklyData] = useState<ISeriesAndCategories>({
+    series: [],
+    categories: [],
+  });
 
-  const revenueData = () => {
-    const thisYear = moment().startOf("year");
-    let resultArray: IRevenueData[] = [];
+  const calculateMonthlyData = useCallback(() => {
+    const thisYear = dayjs().startOf("year");
     const data = props.data.filter(
       (order) => order.extraInformation.feedback === "done",
     );
 
-    for (
-      let beginYear = thisYear.clone().subtract(1, "year");
-      beginYear.isSameOrBefore(thisYear);
-      beginYear.add(1, "year")
-    ) {
-      const yearData = [];
-      for (
-        let date = beginYear.clone();
-        date.isSameOrBefore(beginYear.clone().endOf("year"));
-        date.add(1, "month")
-      ) {
-        const seriesDataCurrYear = data.reduce((count, order) => {
-          const priceInK = order.payment.totalPrice / 1000;
-          const orderDate = moment(order.shipmentDate);
-          if (orderDate.isSame(date, "month")) {
-            return count + priceInK;
-          }
-          return count;
-        }, 0);
-        yearData.push(seriesDataCurrYear);
-      }
-      resultArray = [
-        ...resultArray,
-        {
+    const resultArray: IRevenueData[] = Array.from(
+      { length: 2 },
+      (_, index) => {
+        const beginYear = thisYear.clone().subtract(index, "year");
+        const yearData = Array.from({ length: 12 }, (_, monthIndex) => {
+          const date = beginYear
+            .clone()
+            .startOf("year")
+            .add(monthIndex, "month");
+          const seriesDataCurrYear = data.reduce((count, order) => {
+            const priceInK = order.payment.totalPrice / 1000;
+            const orderDate = dayjs(order.orderDate);
+            return (
+              count +
+              (orderDate.isSame(date, "month") && orderDate.isSame(date, "year")
+                ? priceInK
+                : 0)
+            );
+          }, 0);
+          return seriesDataCurrYear;
+        });
+
+        return {
           name: beginYear.isBefore(thisYear, "year")
             ? "Last year"
             : "Current year",
           data: yearData,
-        },
-      ];
+        };
+      },
+    ).reverse();
+
+    setMonthlyData({
+      series: resultArray,
+      categories: [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Okt",
+        "Nov",
+        "Dec",
+      ],
+    });
+  }, [props.data]);
+
+  const calculateWeeklyData = useCallback((): void => {
+    const last6Months = dayjs().subtract(6, "month").startOf("week");
+    const currentWeek = dayjs().startOf("week");
+    const orders: IOrder[] = props.data;
+    const resultArray: number[] = [];
+    const calendarWeeks: string[] = [];
+
+    for (
+      let date = last6Months.clone();
+      date.isSameOrBefore(currentWeek, "week");
+      date = date.add(1, "week")
+    ) {
+      const totalQuantityThisWeek: number = orders
+        .filter((order: IOrder) => dayjs(order.orderDate).isSame(date, "week"))
+        .reduce((acc, curr) => {
+          acc = acc + curr.payment.totalPrice;
+          return acc;
+        }, 0);
+
+      resultArray.push(totalQuantityThisWeek / 1000);
+      calendarWeeks.push(`CW ${date.week()}`);
     }
 
-    return resultArray;
-  };
-
-  const chartData = {
-    series: revenueData(),
-    options: {
-      chart: {
-        height: 350,
-        type: "line",
-      },
-      colors: ["#CED4DC", "#008FFB"],
-      stroke: {
-        curve: "straight",
-      },
-      title: {
-        align: "left",
-      },
-      grid: {
-        row: {
-          colors: ["#f3f3f3", "transparent"], // takes an array which will be repeated on columns
-          opacity: 0.5,
+    setWeeklyData({
+      series: [
+        {
+          name: "Weekly revenue",
+          data: resultArray,
         },
-      },
-      xaxis: {
-        categories: [
-          "Jan",
-          "Feb",
-          "Mar",
-          "Apr",
-          "May",
-          "Jun",
-          "Jul",
-          "Aug",
-          "Sep",
-          "Okt",
-          "Nov",
-          "Dec",
-        ],
-      },
+      ],
+      categories: calendarWeeks,
+    });
+  }, [props.data]);
+
+  const updateData = useCallback(
+    (key: RevenuDateRange) => {
+      switch (key) {
+        case RevenuDateRange.WEEKLY:
+          setSelectedDateRange(RevenuDateRange.WEEKLY);
+          calculateWeeklyData();
+          break;
+        case RevenuDateRange.MONTHLY:
+          setSelectedDateRange(RevenuDateRange.MONTHLY);
+          calculateMonthlyData();
+          break;
+        case RevenuDateRange.ANNUALLY:
+          setSelectedDateRange(RevenuDateRange.ANNUALLY);
+          break;
+      }
     },
-  };
+    [calculateMonthlyData, calculateWeeklyData],
+  );
+
+  useEffect(() => {
+    updateData(selectedDateRange);
+  }, [selectedDateRange, updateData]);
 
   const handleChange = (e: RadioChangeEvent) => {
-    switch (e.target.value) {
-      case RevenuDateRange.WEEKLY:
-        setSelectedDateRange(RevenuDateRange.WEEKLY);
-        break;
-      case RevenuDateRange.MONTHLY:
-        setSelectedDateRange(RevenuDateRange.MONTHLY);
-        break;
-      case RevenuDateRange.ANNUALLY:
-        setSelectedDateRange(RevenuDateRange.ANNUALLY);
-        break;
-    }
+    updateData(e.target.value);
   };
 
   const getMyChart = (selectedDateRange: RevenuDateRange) => {
     switch (selectedDateRange) {
       case RevenuDateRange.WEEKLY:
         return (
-          <MyChart
-            options={chartData.options}
-            series={chartData.series}
-            type="area"
-            height={300}
-            width={"100%"}
+          <WeeklyChart
+            series={weeklyData.series}
+            categories={weeklyData.categories}
           />
         );
       case RevenuDateRange.MONTHLY:
         return (
-          <MyChart
-            options={chartData.options}
-            series={chartData.series}
-            type="area"
-            height={300}
-            width={"100%"}
+          <MonthlyChart
+            series={monthlyData.series}
+            categories={monthlyData.categories}
           />
         );
       case RevenuDateRange.ANNUALLY:
         return (
-          <MyChart
-            options={chartData.options}
-            series={chartData.series}
-            type="area"
-            height={300}
-            width={"100%"}
+          <MonthlyChart
+            series={monthlyData.series}
+            categories={monthlyData.categories}
           />
         );
     }
@@ -164,7 +196,9 @@ const RevenueCard = (props: IProps) => {
       >
         <Radio.Button value="weekly">Weekly</Radio.Button>
         <Radio.Button value="monthly">Monthly</Radio.Button>
-        <Radio.Button value="annually">Annually</Radio.Button>
+        <Radio.Button value="annually" disabled>
+          Annually
+        </Radio.Button>
       </Radio.Group>
       {getMyChart(selectedDateRange)}
     </Card>

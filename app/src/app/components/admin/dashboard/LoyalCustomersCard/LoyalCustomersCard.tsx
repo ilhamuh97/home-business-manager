@@ -1,5 +1,4 @@
 import { ICustomer } from "@/app/models/customer.model";
-import { IOrder } from "@/app/models/order.model";
 import { Card, Table } from "antd";
 import React from "react";
 
@@ -8,7 +7,6 @@ interface IProps {
 }
 
 const LoyalCustomersCard = (props: IProps) => {
-  // TODO: Use real data
   const customers = props.customers;
   const dataSource = customers
     .sort((a, b) => b.totalInvoices - a.totalInvoices)
@@ -18,7 +16,6 @@ const LoyalCustomersCard = (props: IProps) => {
         ...customer,
       };
     });
-  console.log(dataSource);
   const columns = [
     {
       title: "Name",

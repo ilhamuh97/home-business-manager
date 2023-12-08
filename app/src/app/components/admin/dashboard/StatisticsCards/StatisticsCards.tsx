@@ -1,10 +1,10 @@
 import { Col } from "antd";
-import React, { useState } from "react";
+import React from "react";
 import StatisticCard from "@/app/components/shared/StatisticCard/StatisticCard";
-import moment from "moment";
 import { getFilteredOrder } from "@/app/utils/order";
 import { IOrder } from "@/app/models/order.model";
 import { IMenu } from "@/app/models/menu.model";
+import dayjs, { OpUnitType } from "dayjs";
 
 interface IProps {
   ordersCurrYear: IOrder[];
@@ -14,13 +14,13 @@ const StatisticsCards = (props: IProps) => {
   const ordersCurrYear = props.ordersCurrYear.filter(
     (order) => order.extraInformation.feedback === "done",
   );
-  const GRANULARITY: moment.unitOfTime.StartOf | undefined = "month";
-  const CURR_DATE = moment();
+  const GRANULARITY: OpUnitType = "month";
+  const CURR_DATE = dayjs();
   const OLD_DATE = CURR_DATE.clone().subtract(1, GRANULARITY);
 
   const getOrdersNumberOfMonth = (
     ordersCurrYear: IOrder[],
-    date: moment.Moment,
+    date: dayjs.Dayjs,
   ) => {
     if (ordersCurrYear.length === 0) {
       return 0;
@@ -35,7 +35,7 @@ const StatisticsCards = (props: IProps) => {
 
   const getOrderedMenusNumberOfMonth = (
     ordersCurrYear: IOrder[],
-    date: moment.Moment,
+    date: dayjs.Dayjs,
   ) => {
     if (ordersCurrYear.length === 0) {
       return 0;
@@ -60,7 +60,7 @@ const StatisticsCards = (props: IProps) => {
 
   const getRevenueOfMonth = (
     ordersCurrYear: IOrder[],
-    date: moment.Moment,
+    date: dayjs.Dayjs,
   ): number => {
     if (ordersCurrYear.length === 0) {
       return 0;
@@ -76,7 +76,7 @@ const StatisticsCards = (props: IProps) => {
 
   const getCustomersNumber = (
     ordersCurrYear: IOrder[],
-    date: moment.Moment,
+    date: dayjs.Dayjs,
   ): number => {
     if (ordersCurrYear.length === 0) {
       return 0;

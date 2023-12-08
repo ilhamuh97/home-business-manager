@@ -54,10 +54,6 @@ const StatisticCard = ({
     }
   };
 
-  function handleClick(event: any): void {
-    console.log(event);
-  }
-
   return (
     <Card
       title={title}
@@ -71,7 +67,6 @@ const StatisticCard = ({
             size="small"
             type="link"
             href={redirect}
-            onClick={handleClick}
           />
         ) : null
       }

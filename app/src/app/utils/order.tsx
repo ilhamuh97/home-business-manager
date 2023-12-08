@@ -1,12 +1,12 @@
-import moment from "moment";
 import { IOrder } from "../models/order.model";
+import dayjs, { OpUnitType } from "dayjs";
 
 export const getFilteredOrder = (
   ordersCurrYear: IOrder[],
-  date: moment.Moment,
-  granularity: moment.unitOfTime.StartOf | undefined,
+  date: dayjs.Dayjs,
+  granularity: OpUnitType,
 ) => {
   return ordersCurrYear.filter((order) =>
-    moment(order.shipmentDate).isSame(date, granularity),
+    dayjs(order.orderDate).isSame(date, granularity),
   );
 };

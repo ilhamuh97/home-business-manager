@@ -1,10 +1,9 @@
 import MyChart from "@/app/components/shared/MyChart/MyChart";
 import { getFilteredOrder } from "@/app/utils/order";
 import { Card, DatePicker } from "antd";
-import { DatePickerProps } from "antd/es/date-picker";
-import moment, { DurationInputArg2 } from "moment";
+import { DatePickerProps, RangePickerProps } from "antd/es/date-picker";
 import React, { useCallback, useEffect, useState } from "react";
-import dayjs from "dayjs";
+import dayjs, { OpUnitType } from "dayjs";
 import { IOrder } from "@/app/models/order.model";
 import { IMenu } from "@/app/models/menu.model";
 
@@ -16,28 +15,31 @@ const BestSellerCard = (props: IProps) => {
   const { ordersCurrYear } = props;
   const [dateRange, setDateRange] = useState<string>("");
   const [menuQuantities, setMenuQuantites] = useState<IMenu[]>([]);
-  const GRANULARITY: DurationInputArg2 = "month";
+  const GRANULARITY: OpUnitType = "month";
 
   useEffect(() => {
     if (!dateRange) {
-      const lastMonth = moment().subtract(1, "month").toString();
+      const lastMonth = dayjs().subtract(1, "month").toString();
       setDateRange(lastMonth);
     }
-    const currDate = moment(dateRange);
+    const currDate = dayjs(dateRange);
     getOrderedMenusNumber(ordersCurrYear, currDate);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateRange, ordersCurrYear]);
 
   const dateRangeString = useCallback((dateRange: string): string => {
     if (!dateRange) {
       return "";
     }
-    return moment(dateRange).format("MMMM yyyy").toString();
+    return dayjs(dateRange).format("MMMM YYYY").toString();
   }, []);
+
+  const disabledDate: RangePickerProps["disabledDate"] = (current) => {
+    return current && current > dayjs().startOf("month");
+  };
 
   const getOrderedMenusNumber = (
     ordersCurrYear: IOrder[],
-    date: moment.Moment,
+    date: dayjs.Dayjs,
   ) => {
     if (ordersCurrYear.length === 0) return [];
 
@@ -60,7 +62,7 @@ const BestSellerCard = (props: IProps) => {
   const chartData = {
     series: [
       {
-        data: menuQuantities.map((m: IMenu) => m.quantity).slice(0, 10),
+        data: menuQuantities.map((m: IMenu) => m.quantity).slice(0, 5),
       },
     ],
     options: {
@@ -72,7 +74,7 @@ const BestSellerCard = (props: IProps) => {
         },
       },
       xaxis: {
-        categories: menuQuantities.map((m: IMenu) => m.key).slice(0, 10),
+        categories: menuQuantities.map((m: IMenu) => m.name).slice(0, 5),
       },
       dataLabels: {
         enabled: true,
@@ -100,7 +102,7 @@ const BestSellerCard = (props: IProps) => {
   };
 
   const handleChange: DatePickerProps["onChange"] = (date, dateString) => {
-    const momentDate = moment(dateString).toString();
+    const momentDate = dayjs(dateString).toString();
     setDateRange(momentDate);
   };
 
@@ -110,6 +112,7 @@ const BestSellerCard = (props: IProps) => {
         picker="month"
         onChange={handleChange}
         defaultValue={dayjs().subtract(1, "month").startOf("m")}
+        disabledDate={disabledDate}
       />
       <MyChart
         options={chartData.options}
