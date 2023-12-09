@@ -1,13 +1,23 @@
 "use client";
 
-import React, { useState } from "react";
-import { Button, Layout, Menu, Avatar, Typography } from "antd";
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  Layout,
+  Menu,
+  Avatar,
+  Typography,
+  Dropdown,
+  MenuProps,
+  message,
+} from "antd";
 import styles from "./layout.module.scss";
 import { useRouter, usePathname } from "next/navigation";
-import { UserOutlined } from "@ant-design/icons";
+import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { sidebarItems } from "@/constants/sidebarItems";
 import { MdFoodBank } from "react-icons/md";
+import { getToken, logout } from "@/utils/auth";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -19,17 +29,51 @@ export default function AboutLayout({
   const router = useRouter();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
-  const items = sidebarItems;
+  const [isAuth, setIsAuth] = useState<boolean>(false);
+
+  useEffect(() => {
+    const checkAuthentication = () => {
+      const token = getToken();
+      if (token) {
+        setIsAuth(true);
+      } else {
+        setIsAuth(false);
+        router.push("/login");
+      }
+    };
+
+    checkAuthentication();
+  }, [router]);
 
   const toggleCollapsed = () => {
-    setCollapsed(!collapsed);
+    setCollapsed((prevCollapsed) => !prevCollapsed);
   };
 
   const onMenuClick = ({ key }: any): void => {
     router.push(key);
   };
 
-  return (
+  const items: MenuProps["items"] = [
+    {
+      label: "Logout",
+      key: "logout",
+      icon: <LogoutOutlined />,
+    },
+  ];
+
+  const handleMenuClick = (e: any) => {
+    if (e.key === "logout") {
+      logout();
+      router.push("/login");
+    }
+  };
+
+  const menuProps = {
+    items,
+    onClick: handleMenuClick,
+  };
+
+  return isAuth ? (
     <Layout className={styles.dashboardLayout} hasSider>
       <div className={collapsed ? styles.close : styles.open}></div>
       <Sider
@@ -44,7 +88,7 @@ export default function AboutLayout({
           mode="inline"
           defaultSelectedKeys={[pathname]}
           defaultOpenKeys={["sub1"]}
-          items={items}
+          items={sidebarItems}
           onClick={onMenuClick}
         />
       </Sider>
@@ -53,7 +97,9 @@ export default function AboutLayout({
           <Button onClick={toggleCollapsed} ghost>
             {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           </Button>
-          <Avatar className={styles.avatar} icon={<UserOutlined />} />
+          <Dropdown menu={menuProps} trigger={["click"]}>
+            <Button icon={<UserOutlined />} />
+          </Dropdown>
         </Header>
         <Content className={styles.content}>{children}</Content>
         <Footer className={styles.footer}>
@@ -63,5 +109,7 @@ export default function AboutLayout({
         </Footer>
       </Layout>
     </Layout>
+  ) : (
+    ""
   );
 }

@@ -1,4 +1,4 @@
-import MyChart from "@/app/components/shared/MyChart/MyChart";
+import MyChart from "@/components/shared/MyChart/MyChart";
 import React from "react";
 
 interface IProps {

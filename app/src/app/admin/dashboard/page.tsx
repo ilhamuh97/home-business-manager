@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { Col, Row, Spin, Typography, message } from "antd";
-import RevenueCard from "@/app/components/admin/dashboard/RevenueCard/RevenueCard";
-import StatisticsCards from "@/app/components/admin/dashboard/StatisticsCards/StatisticsCards";
 import { getCustomers, getOrders } from "@/services/dashboard.service";
-import BestSellerCard from "@/app/components/admin/dashboard/BestSellerCard/BestSellerCard";
-import OngoingOrdersCard from "@/app/components/admin/dashboard/OngoingOrdersCard/OngoingOrdersCard";
-import LoyalCustomersCard from "@/app/components/admin/dashboard/LoyalCustomersCard/LoyalCustomersCard";
-import { IOrder } from "@/app/models/order.model";
-import { ICustomer } from "@/app/models/customer.model";
 import dayjs from "dayjs";
+import BestSellerCard from "@/components/admin/dashboard/BestSellerCard/BestSellerCard";
+import LoyalCustomersCard from "@/components/admin/dashboard/LoyalCustomersCard/LoyalCustomersCard";
+import OngoingOrdersCard from "@/components/admin/dashboard/OngoingOrdersCard/OngoingOrdersCard";
+import RevenueCard from "@/components/admin/dashboard/RevenueCard/RevenueCard";
+import StatisticsCards from "@/components/admin/dashboard/StatisticsCards/StatisticsCards";
+import { ICustomer } from "@/models/customer.model";
+import { IOrder } from "@/models/order.model";
 
 export default function Home() {
   const [orders, setOrders] = useState<IOrder[]>([]);

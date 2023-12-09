@@ -1,10 +1,10 @@
 import { Col } from "antd";
 import React from "react";
-import StatisticCard from "@/app/components/shared/StatisticCard/StatisticCard";
-import { getFilteredOrder } from "@/app/utils/order";
-import { IOrder } from "@/app/models/order.model";
-import { IMenu } from "@/app/models/menu.model";
 import dayjs, { OpUnitType } from "dayjs";
+import StatisticCard from "@/components/shared/StatisticCard/StatisticCard";
+import { IMenu } from "@/models/menu.model";
+import { IOrder } from "@/models/order.model";
+import { getFilteredOrder } from "@/utils/order";
 
 interface IProps {
   ordersCurrYear: IOrder[];

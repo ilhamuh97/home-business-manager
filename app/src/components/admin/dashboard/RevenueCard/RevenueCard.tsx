@@ -1,11 +1,11 @@
 import { Card, Radio, RadioChangeEvent } from "antd";
 import React, { useCallback, useEffect, useState } from "react";
-import { IOrder } from "@/app/models/order.model";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear"; // import plugin
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore"; // import plugin
 import MonthlyChart from "./MonthlyChart/MonthlyChart";
 import WeeklyChart from "./WeeklyChart/WeeklyChart";
+import { IOrder } from "@/models/order.model";
 
 dayjs.extend(weekOfYear);
 dayjs.extend(isSameOrBefore);

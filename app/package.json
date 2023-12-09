@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@ant-design/cssinjs": "^1.17.2",
+    "@react-oauth/google": "^0.12.1",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "antd": "^5.11.1",
     "apexcharts": "^3.44.0",
@@ -28,6 +29,7 @@
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/nprogress": "^0.2.3",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",

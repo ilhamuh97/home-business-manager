@@ -1,4 +1,4 @@
-import { ICustomer } from "@/app/models/customer.model";
+import { ICustomer } from "@/models/customer.model";
 import { Card, Table } from "antd";
 import React from "react";
 

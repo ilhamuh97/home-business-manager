@@ -1,7 +1,7 @@
-import { ICustomer } from "@/app/models/customer.model";
-import { IMenu } from "@/app/models/menu.model";
-import { IFeedBack, IOrder } from "@/app/models/order.model";
-import { Card, Col, Table, Tag, Typography } from "antd";
+import { ICustomer } from "@/models/customer.model";
+import { IMenu } from "@/models/menu.model";
+import { IOrder, IFeedBack } from "@/models/order.model";
+import { Card, Table, Tag, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import React from "react";

@@ -1,11 +1,11 @@
-import MyChart from "@/app/components/shared/MyChart/MyChart";
-import { getFilteredOrder } from "@/app/utils/order";
 import { Card, DatePicker } from "antd";
 import { DatePickerProps, RangePickerProps } from "antd/es/date-picker";
 import React, { useCallback, useEffect, useState } from "react";
 import dayjs, { OpUnitType } from "dayjs";
-import { IOrder } from "@/app/models/order.model";
-import { IMenu } from "@/app/models/menu.model";
+import MyChart from "@/components/shared/MyChart/MyChart";
+import { IMenu } from "@/models/menu.model";
+import { IOrder } from "@/models/order.model";
+import { getFilteredOrder } from "@/utils/order";
 
 interface IProps {
   ordersCurrYear: IOrder[];
