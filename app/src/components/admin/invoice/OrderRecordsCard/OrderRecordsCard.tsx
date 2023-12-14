@@ -1,6 +1,6 @@
 import { ICustomer } from "@/models/customer.model";
 import { IMenu } from "@/models/menu.model";
-import { IOrder, IFeedBack } from "@/models/order.model";
+import { IFeedBack, IOrder } from "@/models/order.model";
 import { Card, Table, Tag, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
@@ -20,17 +20,10 @@ interface IDataSource {
   customer?: ICustomer;
 }
 
-const OngoingOrdersCard = (props: IProps) => {
+const OrderRecordsCard = (props: IProps) => {
   const { orders = [] } = props;
-  const ongoingOrders = (orders: IOrder[]) => {
-    return orders.filter(
-      (order) =>
-        order.extraInformation.feedback !== IFeedBack.DONE &&
-        order.extraInformation.feedback !== IFeedBack.CANCELED,
-    );
-  };
 
-  const dataSource: IDataSource[] = ongoingOrders(orders)
+  const dataSource: IDataSource[] = orders
     .map((order, index) => {
       return {
         key: index,
@@ -42,7 +35,7 @@ const OngoingOrdersCard = (props: IProps) => {
         customer: order.customer,
       };
     })
-    .sort((a, b) => dayjs(a.orderDate).diff(dayjs(b.orderDate)));
+    .sort((a, b) => dayjs(b.orderDate).diff(dayjs(a.orderDate)));
 
   const menuToString = (menu: IMenu) => {
     return `${menu.name} (${menu.quantity})`;
@@ -80,11 +73,17 @@ const OngoingOrdersCard = (props: IProps) => {
       render: (status: string) => {
         let color = "";
         switch (status) {
+          case IFeedBack.DONE:
+            color = "success";
+            break;
           case IFeedBack.PAID:
             color = "processing";
             break;
           case IFeedBack.DELIVERED:
             color = "warning";
+            break;
+          case IFeedBack.CANCELED:
+            color = "error";
             break;
           case IFeedBack.NOSTATUS:
             color = "default";
@@ -98,13 +97,13 @@ const OngoingOrdersCard = (props: IProps) => {
     },
   ];
   return (
-    <Card title={`Ongoing orders ${dataSourceNumber(dataSource)}`} size="small">
+    <Card title="Invoices" size="small">
       <Table
         dataSource={dataSource}
         columns={columns}
         size="small"
         pagination={{
-          pageSize: 5,
+          pageSize: 10,
         }}
         expandable={{
           expandedRowRender: (record) => (
@@ -125,4 +124,4 @@ const OngoingOrdersCard = (props: IProps) => {
   );
 };
 
-export default OngoingOrdersCard;
+export default OrderRecordsCard;

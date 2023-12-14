@@ -7,42 +7,35 @@ import { IOrder } from "@/models/order.model";
 import { getFilteredOrder } from "@/utils/order";
 
 interface IProps {
-  ordersCurrYear: IOrder[];
+  orders: IOrder[];
 }
 
 const StatisticsCards = (props: IProps) => {
-  const ordersCurrYear = props.ordersCurrYear.filter(
-    (order) => order.extraInformation.feedback === "done",
-  );
+  const { orders } = props;
   const GRANULARITY: OpUnitType = "month";
   const CURR_DATE = dayjs();
   const OLD_DATE = CURR_DATE.clone().subtract(1, GRANULARITY);
 
-  const getOrdersNumberOfMonth = (
-    ordersCurrYear: IOrder[],
-    date: dayjs.Dayjs,
-  ) => {
-    if (ordersCurrYear.length === 0) {
+  const getOrdersNumberOfMonth = (orders: IOrder[], date: dayjs.Dayjs) => {
+    if (orders.length === 0) {
       return 0;
     }
-    return getFilteredOrder(ordersCurrYear, date, GRANULARITY).reduce(
-      (count) => {
-        return count + 1;
-      },
-      0,
-    );
+
+    return getFilteredOrder(orders, date, GRANULARITY).reduce((count) => {
+      return count + 1;
+    }, 0);
   };
 
   const getOrderedMenusNumberOfMonth = (
-    ordersCurrYear: IOrder[],
+    orders: IOrder[],
     date: dayjs.Dayjs,
   ) => {
-    if (ordersCurrYear.length === 0) {
+    if (orders.length === 0) {
       return 0;
     }
 
     const totalMenusOrdered = getFilteredOrder(
-      ordersCurrYear,
+      orders,
       date,
       GRANULARITY,
     ).reduce((total, order) => {
@@ -58,14 +51,11 @@ const StatisticsCards = (props: IProps) => {
     return totalMenusOrdered;
   };
 
-  const getRevenueOfMonth = (
-    ordersCurrYear: IOrder[],
-    date: dayjs.Dayjs,
-  ): number => {
-    if (ordersCurrYear.length === 0) {
+  const getRevenueOfMonth = (orders: IOrder[], date: dayjs.Dayjs): number => {
+    if (orders.length === 0) {
       return 0;
     }
-    return getFilteredOrder(ordersCurrYear, date, GRANULARITY).reduce(
+    return getFilteredOrder(orders, date, GRANULARITY).reduce(
       (count, order) => {
         const priceInK = order.payment.totalPrice / 1000;
         return count + priceInK;
@@ -74,14 +64,11 @@ const StatisticsCards = (props: IProps) => {
     );
   };
 
-  const getCustomersNumber = (
-    ordersCurrYear: IOrder[],
-    date: dayjs.Dayjs,
-  ): number => {
-    if (ordersCurrYear.length === 0) {
+  const getCustomersNumber = (orders: IOrder[], date: dayjs.Dayjs): number => {
+    if (orders.length === 0) {
       return 0;
     }
-    return getFilteredOrder(ordersCurrYear, date, GRANULARITY)
+    return getFilteredOrder(orders, date, GRANULARITY)
       .map((order) => order.customer.phoneNumber)
       .filter((value, index, self) => {
         return self.indexOf(value) === index;
@@ -104,10 +91,10 @@ const StatisticsCards = (props: IProps) => {
         <StatisticCard
           title="Revenue"
           suffix="K"
-          value={getRevenueOfMonth(ordersCurrYear, CURR_DATE)}
+          value={getRevenueOfMonth(orders, CURR_DATE)}
           percentage={getPercentageIncrease(
-            getRevenueOfMonth(ordersCurrYear, CURR_DATE),
-            getRevenueOfMonth(ordersCurrYear, OLD_DATE),
+            getRevenueOfMonth(orders, CURR_DATE),
+            getRevenueOfMonth(orders, OLD_DATE),
           )}
           dateRange="monthly"
         />
@@ -115,22 +102,22 @@ const StatisticsCards = (props: IProps) => {
       <Col span={6}>
         <StatisticCard
           title="Invoices"
-          value={getOrdersNumberOfMonth(ordersCurrYear, CURR_DATE)}
+          value={getOrdersNumberOfMonth(orders, CURR_DATE)}
           percentage={getPercentageIncrease(
-            getOrdersNumberOfMonth(ordersCurrYear, CURR_DATE),
-            getOrdersNumberOfMonth(ordersCurrYear, OLD_DATE),
+            getOrdersNumberOfMonth(orders, CURR_DATE),
+            getOrdersNumberOfMonth(orders, OLD_DATE),
           )}
           dateRange="monthly"
-          redirect="/admin/order"
+          redirect="/admin/invoice"
         />
       </Col>
       <Col span={6}>
         <StatisticCard
           title="Total menus"
-          value={getOrderedMenusNumberOfMonth(ordersCurrYear, CURR_DATE)}
+          value={getOrderedMenusNumberOfMonth(orders, CURR_DATE)}
           percentage={getPercentageIncrease(
-            getOrderedMenusNumberOfMonth(ordersCurrYear, CURR_DATE),
-            getOrderedMenusNumberOfMonth(ordersCurrYear, OLD_DATE),
+            getOrderedMenusNumberOfMonth(orders, CURR_DATE),
+            getOrderedMenusNumberOfMonth(orders, OLD_DATE),
           )}
           dateRange="monthly"
           redirect="/admin/menu"
@@ -139,10 +126,10 @@ const StatisticsCards = (props: IProps) => {
       <Col span={6}>
         <StatisticCard
           title="Customers"
-          value={getCustomersNumber(ordersCurrYear, CURR_DATE)}
+          value={getCustomersNumber(orders, CURR_DATE)}
           percentage={getPercentageIncrease(
-            getCustomersNumber(ordersCurrYear, CURR_DATE),
-            getCustomersNumber(ordersCurrYear, OLD_DATE),
+            getCustomersNumber(orders, CURR_DATE),
+            getCustomersNumber(orders, OLD_DATE),
           )}
           dateRange="monthly"
           redirect="/admin/customer"

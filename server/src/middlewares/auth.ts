@@ -26,7 +26,7 @@ async function authAdmin(
 
       if (!userData.ok) {
         throw {
-          name: 'Google API Error',
+          name: 'Invalid Auth',
           message: 'Failed to fetch user data',
         };
       }

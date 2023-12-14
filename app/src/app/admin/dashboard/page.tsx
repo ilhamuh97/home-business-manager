@@ -10,12 +10,14 @@ import OngoingOrdersCard from "@/components/admin/dashboard/OngoingOrdersCard/On
 import RevenueCard from "@/components/admin/dashboard/RevenueCard/RevenueCard";
 import StatisticsCards from "@/components/admin/dashboard/StatisticsCards/StatisticsCards";
 import { ICustomer } from "@/models/customer.model";
-import { IOrder } from "@/models/order.model";
+import { IFeedBack, IOrder } from "@/models/order.model";
+import { handleApiErrors } from "@/utils/error";
 
 export default function Home() {
+  const [rawOrders, setRawOrders] = useState<IOrder[]>([]);
   const [orders, setOrders] = useState<IOrder[]>([]);
   const [customers, setCustomers] = useState<ICustomer[]>([]);
-  const [ordersCurrYear, setOrdersCurrYear] = useState<IOrder[]>([]);
+  const [prevYearOrders, setPrevYearOrders] = useState<IOrder[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -28,29 +30,34 @@ export default function Home() {
           getCustomers(),
         ]);
 
-        const ordersResult = await orderResponse.json();
-        const customerResult = await customerResponse.json();
+        const [ordersResult, customerResult] = await handleApiErrors([
+          orderResponse,
+          customerResponse,
+        ]);
+        setRawOrders(ordersResult.data);
+        setCustomers(customerResult.data);
 
-        const orderData: IOrder[] = ordersResult.data;
-        const customerData: ICustomer[] = customerResult.data;
+        const orderDataDone: IOrder[] = ordersResult.data.filter(
+          (order: IOrder) => order.extraInformation.feedback === IFeedBack.DONE,
+        );
+        setOrders(orderDataDone);
 
         const currYear = dayjs();
-
-        const filteredOrder: IOrder[] = orderData.filter((order: IOrder) =>
-          dayjs(order.orderDate).isSame(currYear, "year"),
+        setPrevYearOrders(
+          orderDataDone.filter(
+            (order: IOrder) =>
+              dayjs(order.orderDate).diff(currYear, "year") < 1,
+          ),
         );
-
-        setOrders(orderData);
-        setCustomers(customerData);
-        setOrdersCurrYear(filteredOrder);
       } catch (error: any) {
+        console.log(error);
         message.error(error.message);
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (orders.length === 0) {
+    if (!orders.length) {
       fetchData();
     }
   }, [orders]);
@@ -60,15 +67,15 @@ export default function Home() {
       <Spin tip="Loading" size="small" spinning={isLoading}>
         <Typography.Title level={5}>Overview</Typography.Title>
         <Row gutter={[10, 10]}>
-          <StatisticsCards ordersCurrYear={ordersCurrYear} />
+          <StatisticsCards orders={prevYearOrders} />
           <Col span={16}>
             <RevenueCard data={orders} />
           </Col>
           <Col span={8}>
-            <BestSellerCard ordersCurrYear={ordersCurrYear} />
+            <BestSellerCard orders={prevYearOrders} />
           </Col>
           <Col span={12}>
-            <OngoingOrdersCard orders={orders} />
+            <OngoingOrdersCard orders={rawOrders} />
           </Col>
           <Col span={12}>
             <LoyalCustomersCard customers={customers} />

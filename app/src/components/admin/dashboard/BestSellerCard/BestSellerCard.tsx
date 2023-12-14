@@ -8,11 +8,11 @@ import { IOrder } from "@/models/order.model";
 import { getFilteredOrder } from "@/utils/order";
 
 interface IProps {
-  ordersCurrYear: IOrder[];
+  orders: IOrder[];
 }
 
 const BestSellerCard = (props: IProps) => {
-  const { ordersCurrYear } = props;
+  const { orders } = props;
   const [dateRange, setDateRange] = useState<string>("");
   const [menuQuantities, setMenuQuantites] = useState<IMenu[]>([]);
   const GRANULARITY: OpUnitType = "month";
@@ -23,8 +23,8 @@ const BestSellerCard = (props: IProps) => {
       setDateRange(lastMonth);
     }
     const currDate = dayjs(dateRange);
-    getOrderedMenusNumber(ordersCurrYear, currDate);
-  }, [dateRange, ordersCurrYear]);
+    getOrderedMenusNumber(orders, currDate);
+  }, [dateRange, orders]);
 
   const dateRangeString = useCallback((dateRange: string): string => {
     if (!dateRange) {
@@ -37,14 +37,11 @@ const BestSellerCard = (props: IProps) => {
     return current && current > dayjs().startOf("month");
   };
 
-  const getOrderedMenusNumber = (
-    ordersCurrYear: IOrder[],
-    date: dayjs.Dayjs,
-  ) => {
-    if (ordersCurrYear.length === 0) return [];
+  const getOrderedMenusNumber = (orders: IOrder[], date: dayjs.Dayjs) => {
+    if (orders.length === 0) return [];
 
     const tempMenuQuantities: IMenu[] = [];
-    getFilteredOrder(ordersCurrYear, date, GRANULARITY).forEach((order) => {
+    getFilteredOrder(orders, date, GRANULARITY).forEach((order) => {
       order.menu.forEach(({ key, name, quantity }: IMenu) => {
         const existingMenusQuantity = tempMenuQuantities.find(
           (mQ) => mQ.key === key,
@@ -113,6 +110,7 @@ const BestSellerCard = (props: IProps) => {
         onChange={handleChange}
         defaultValue={dayjs().subtract(1, "month").startOf("m")}
         disabledDate={disabledDate}
+        allowClear={false}
       />
       <MyChart
         options={chartData.options}

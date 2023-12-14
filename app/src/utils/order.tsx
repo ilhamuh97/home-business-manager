@@ -10,3 +10,27 @@ export const getFilteredOrder = (
     dayjs(order.orderDate).isSame(date, granularity),
   );
 };
+
+export const getOrdersNumberOfMonth = (
+  ordersCurrYear: IOrder[],
+  date: dayjs.Dayjs,
+  granularity: OpUnitType,
+) => {
+  if (ordersCurrYear.length === 0) {
+    return 0;
+  }
+
+  return getFilteredOrder(ordersCurrYear, date, granularity).reduce((count) => {
+    return count + 1;
+  }, 0);
+};
+
+export const getPercentageIncrease = (
+  newValue: number,
+  oldValue: number,
+): number => {
+  if (oldValue === 0) {
+    return 0;
+  }
+  return Number((((newValue - oldValue) / oldValue) * 100).toFixed(2));
+};

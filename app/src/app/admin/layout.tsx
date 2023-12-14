@@ -1,25 +1,14 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  Layout,
-  Menu,
-  Avatar,
-  Typography,
-  Dropdown,
-  MenuProps,
-  message,
-} from "antd";
-import styles from "./layout.module.scss";
+import { Button, Layout, Menu, Typography, Dropdown, MenuProps } from "antd";
 import { useRouter, usePathname } from "next/navigation";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { sidebarItems } from "@/constants/sidebarItems";
+import { SIDEBAR_ITEMS } from "@/constants/sidebarItems";
 import { MdFoodBank } from "react-icons/md";
 import { getToken, logout } from "@/utils/auth";
-
-const { Header, Content, Footer, Sider } = Layout;
+import styles from "./layout.module.scss";
 
 export default function AboutLayout({
   children, // will be a page or nested layout
@@ -28,8 +17,9 @@ export default function AboutLayout({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isAuth, setIsAuth] = useState<boolean>(false);
+  const { Header, Content, Footer, Sider } = Layout;
 
   useEffect(() => {
     const checkAuthentication = () => {
@@ -88,7 +78,7 @@ export default function AboutLayout({
           mode="inline"
           defaultSelectedKeys={[pathname]}
           defaultOpenKeys={["sub1"]}
-          items={sidebarItems}
+          items={SIDEBAR_ITEMS}
           onClick={onMenuClick}
         />
       </Sider>

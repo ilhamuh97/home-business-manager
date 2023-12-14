@@ -4,8 +4,8 @@ import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear"; // import plugin
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore"; // import plugin
 import MonthlyChart from "./MonthlyChart/MonthlyChart";
-import WeeklyChart from "./WeeklyChart/WeeklyChart";
 import { IOrder } from "@/models/order.model";
+import WeeklyChart from "./WeeklyChart/WeeklyChart";
 
 dayjs.extend(weekOfYear);
 dayjs.extend(isSameOrBefore);
@@ -59,12 +59,11 @@ const RevenueCard = (props: IProps) => {
             .startOf("year")
             .add(monthIndex, "month");
           const seriesDataCurrYear = data.reduce((count, order) => {
-            const priceInK = order.payment.totalPrice / 1000;
             const orderDate = dayjs(order.orderDate);
             return (
               count +
               (orderDate.isSame(date, "month") && orderDate.isSame(date, "year")
-                ? priceInK
+                ? 1
                 : 0)
             );
           }, 0);
@@ -111,14 +110,10 @@ const RevenueCard = (props: IProps) => {
       date.isSameOrBefore(currentWeek, "week");
       date = date.add(1, "week")
     ) {
-      const totalQuantityThisWeek: number = orders
-        .filter((order: IOrder) => dayjs(order.orderDate).isSame(date, "week"))
-        .reduce((acc, curr) => {
-          acc = acc + curr.payment.totalPrice;
-          return acc;
-        }, 0);
-
-      resultArray.push(totalQuantityThisWeek / 1000);
+      const totalQuantityThisWeek: number = orders.filter((order: IOrder) =>
+        dayjs(order.orderDate).isSame(date, "week"),
+      ).length;
+      resultArray.push(totalQuantityThisWeek);
       calendarWeeks.push(`CW ${date.week()}`);
     }
 
@@ -187,7 +182,7 @@ const RevenueCard = (props: IProps) => {
   };
 
   return (
-    <Card title="Revenue report in (K)" size="small">
+    <Card title="Total completed invoices report" size="small">
       <Radio.Group
         style={{ marginBottom: 8 }}
         defaultValue={selectedDateRange}

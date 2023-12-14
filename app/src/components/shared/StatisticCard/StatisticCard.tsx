@@ -11,6 +11,8 @@ type StatisticCardProps = {
   percentage?: number;
   dateRange?: string;
   redirect?: string;
+  valueStyle?: React.CSSProperties;
+  reverse?: boolean;
 };
 
 const StatisticCard = ({
@@ -20,24 +22,34 @@ const StatisticCard = ({
   percentage = 0,
   dateRange,
   redirect = "",
+  valueStyle,
+  reverse = false,
 }: StatisticCardProps) => {
-  const getStatus = (percentage: number) => {
+  const getStatus = (percentage: number, reverse: boolean = false) => {
     if (percentage === 0) {
       return "straight";
     } else if (percentage > 0) {
-      return "up";
+      return reverse ? "down" : "up";
     } else {
-      return "down";
+      return reverse ? "up" : "down";
     }
   };
 
-  const getStatusIcon = (percentage: number) => {
+  const getStatusIcon = (percentage: number, reverse: boolean = false) => {
     if (percentage === 0) {
       return "";
     } else if (percentage > 0) {
-      return <ArrowUpOutlined className={styles.up} />;
+      return reverse ? (
+        <ArrowDownOutlined className={styles.down} />
+      ) : (
+        <ArrowUpOutlined className={styles.up} />
+      );
     } else {
-      return <ArrowDownOutlined className={styles.down} />;
+      return reverse ? (
+        <ArrowUpOutlined className={styles.up} />
+      ) : (
+        <ArrowDownOutlined className={styles.down} />
+      );
     }
   };
 
@@ -58,7 +70,6 @@ const StatisticCard = ({
     <Card
       title={title}
       className={styles.statisticCard}
-      bodyStyle={{ padding: "1rem" }}
       size="small"
       extra={
         redirect ? (
@@ -72,11 +83,13 @@ const StatisticCard = ({
       }
     >
       <div className={styles.content}>
-        <Statistic value={value} suffix={suffix} />
+        <Statistic value={value} suffix={suffix} valueStyle={valueStyle} />
         <div className={styles.detail}>
-          {getStatusIcon(percentage)}{" "}
+          {getStatusIcon(percentage, reverse)}{" "}
           <Typography.Text
-            className={`${styles[getStatus(percentage)]} ${styles.small}`}
+            className={`${styles[getStatus(percentage, reverse)]} ${
+              styles.small
+            }`}
           >
             {Math.abs(percentage || 0)}%
           </Typography.Text>{" "}
