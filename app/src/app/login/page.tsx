@@ -26,7 +26,7 @@ const Login = () => {
       if (loginData.status === "success") {
         setToken({ accessToken: codeResponse.access_token });
         message.success("Login succeeded");
-        router.push("admin/dashboard");
+        router.push("admin/overview");
       }
     } catch (error) {
       console.error("Login error:", error);

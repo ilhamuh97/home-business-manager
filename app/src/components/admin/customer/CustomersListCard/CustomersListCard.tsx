@@ -1,7 +1,7 @@
-import { ICustomer } from "@/models/customer.model";
 import { IOrder } from "@/models/order.model";
 import { generateCustomerInvoiceSummary } from "@/utils/order";
 import { Card, Table } from "antd";
+import { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import React from "react";
@@ -11,19 +11,32 @@ interface IProps {
   orders: IOrder[];
 }
 
-const LoyalCustomersCard = (props: IProps) => {
+interface IDataSource {
+  name: string;
+  phoneNumber: string;
+  address: string;
+  joinDate: string;
+  lastOrder: string;
+  totalInvoices: number;
+}
+
+const CustomersListCard = (props: IProps) => {
   const { orders = [] } = props;
-  const dataSource = generateCustomerInvoiceSummary(orders)
-    .sort((a, b) => b.totalInvoices - a.totalInvoices)
+
+  const dataSource: IDataSource[] = generateCustomerInvoiceSummary(orders)
     .map((customer) => {
       return {
-        key: customer.phoneNumber,
-        ...customer,
+        name: customer.name,
+        phoneNumber: customer.phoneNumber,
+        address: customer.address,
+        joinDate: dayjs(customer.joinDate).fromNow(),
         lastOrder: dayjs(customer.lastOrder).fromNow(),
+        totalInvoices: customer.totalInvoices,
       };
-    });
+    })
+    .sort((a, b) => b.totalInvoices - a.totalInvoices);
 
-  const columns = [
+  const columns: ColumnsType<IDataSource> = [
     {
       title: "Name",
       dataIndex: "name",
@@ -33,6 +46,16 @@ const LoyalCustomersCard = (props: IProps) => {
       title: "Phone Number",
       dataIndex: "phoneNumber",
       key: "phoneNumber",
+    },
+    {
+      title: "Address",
+      dataIndex: "address",
+      key: "address",
+    },
+    {
+      title: "Join Date",
+      dataIndex: "joinDate",
+      key: "joinDate",
     },
     {
       title: "Last Order",
@@ -45,18 +68,19 @@ const LoyalCustomersCard = (props: IProps) => {
       key: "totalInvoices",
     },
   ];
+
   return (
-    <Card title="Loyal customers" size="small">
+    <Card title="Customer list">
       <Table
         dataSource={dataSource}
         columns={columns}
         size="small"
         pagination={{
-          pageSize: 5,
+          pageSize: 15,
         }}
-      />
+      ></Table>
     </Card>
   );
 };
 
-export default LoyalCustomersCard;
+export default CustomersListCard;

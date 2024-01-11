@@ -6,13 +6,14 @@ import styles from "./StatisticCard.module.scss";
 
 type StatisticCardProps = {
   title?: string;
-  value?: number;
+  value?: number | string;
   suffix?: string;
   percentage?: number;
   dateRange?: string;
   redirect?: string;
   valueStyle?: React.CSSProperties;
   reverse?: boolean;
+  hidePercentage?: boolean;
 };
 
 const StatisticCard = ({
@@ -24,6 +25,7 @@ const StatisticCard = ({
   redirect = "",
   valueStyle,
   reverse = false,
+  hidePercentage = false,
 }: StatisticCardProps) => {
   const getStatus = (percentage: number, reverse: boolean = false) => {
     if (percentage === 0) {
@@ -84,22 +86,24 @@ const StatisticCard = ({
     >
       <div className={styles.content}>
         <Statistic value={value} suffix={suffix} valueStyle={valueStyle} />
-        <div className={styles.detail}>
-          {getStatusIcon(percentage, reverse)}{" "}
-          <Typography.Text
-            className={`${styles[getStatus(percentage, reverse)]} ${
-              styles.small
-            }`}
-          >
-            {Math.abs(percentage || 0)}%
-          </Typography.Text>{" "}
-          <Typography.Text
-            className={`${styles.dateRange} ${styles.small}`}
-            type="secondary"
-          >
-            {getDateRangeString(dateRange)}
-          </Typography.Text>
-        </div>
+        {!hidePercentage ? (
+          <div className={styles.detail}>
+            {getStatusIcon(percentage, reverse)}{" "}
+            <Typography.Text
+              className={`${styles[getStatus(percentage, reverse)]} ${
+                styles.small
+              }`}
+            >
+              {Math.abs(percentage || 0)}%
+            </Typography.Text>{" "}
+            <Typography.Text
+              className={`${styles.dateRange} ${styles.small}`}
+              type="secondary"
+            >
+              {getDateRangeString(dateRange)}
+            </Typography.Text>
+          </div>
+        ) : null}
       </div>
     </Card>
   );

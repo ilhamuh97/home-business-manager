@@ -3,12 +3,9 @@ import React from "react";
 import dayjs, { OpUnitType } from "dayjs";
 import StatisticCard from "@/components/shared/StatisticCard/StatisticCard";
 import { IFeedBack, IOrder } from "@/models/order.model";
-import {
-  getFilteredOrder,
-  getOrdersNumberOfMonth,
-  getPercentageIncrease,
-} from "@/utils/order";
+import { getFilteredOrder, getOrdersNumberOfMonth } from "@/utils/order";
 import styles from "../../../shared/StatisticCard/StatisticCard.module.scss";
+import { getPercentageIncrease } from "@/utils/general";
 
 interface IProps {
   orders: IOrder[];

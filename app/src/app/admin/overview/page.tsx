@@ -78,7 +78,7 @@ export default function Home() {
             <OngoingOrdersCard orders={rawOrders} />
           </Col>
           <Col span={12}>
-            <LoyalCustomersCard customers={customers} />
+            <LoyalCustomersCard orders={orders} />
           </Col>
         </Row>
       </Spin>

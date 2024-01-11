@@ -8,7 +8,7 @@ export const SIDEBAR_ITEMS = [
     label: "Dashboard",
     children: [
       {
-        key: "/admin/dashboard",
+        key: "/admin/overview",
         label: "Overview",
       },
       {

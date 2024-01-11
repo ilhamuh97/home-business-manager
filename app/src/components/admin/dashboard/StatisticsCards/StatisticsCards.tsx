@@ -5,6 +5,7 @@ import StatisticCard from "@/components/shared/StatisticCard/StatisticCard";
 import { IMenu } from "@/models/menu.model";
 import { IOrder } from "@/models/order.model";
 import { getFilteredOrder } from "@/utils/order";
+import { getPercentageIncrease } from "@/utils/general";
 
 interface IProps {
   orders: IOrder[];
@@ -73,16 +74,6 @@ const StatisticsCards = (props: IProps) => {
       .filter((value, index, self) => {
         return self.indexOf(value) === index;
       }).length;
-  };
-
-  const getPercentageIncrease = (
-    newValue: number,
-    oldValue: number,
-  ): number => {
-    if (oldValue === 0) {
-      return 0;
-    }
-    return Number((((newValue - oldValue) / oldValue) * 100).toFixed(2));
   };
 
   return (

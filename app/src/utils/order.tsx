@@ -1,4 +1,5 @@
-import { IOrder } from "../models/order.model";
+import { ICustomer } from "@/models/customer.model";
+import { IFeedBack, IOrder } from "../models/order.model";
 import dayjs, { OpUnitType } from "dayjs";
 
 export const getFilteredOrder = (
@@ -25,12 +26,43 @@ export const getOrdersNumberOfMonth = (
   }, 0);
 };
 
-export const getPercentageIncrease = (
-  newValue: number,
-  oldValue: number,
-): number => {
-  if (oldValue === 0) {
-    return 0;
-  }
-  return Number((((newValue - oldValue) / oldValue) * 100).toFixed(2));
+export const generateCustomerInvoiceSummary = (
+  orders: IOrder[],
+): ICustomer[] => {
+  const filteredInvoices = orders.filter(
+    (order) => order.extraInformation.feedback !== IFeedBack.CANCELED,
+  );
+
+  const customerSummary: any = {};
+
+  filteredInvoices.forEach((order) => {
+    const customerName = order.customer.name;
+
+    if (!customerSummary[customerName]) {
+      customerSummary[customerName] = {
+        name: customerName,
+        phoneNumber: order.customer.phoneNumber,
+        address: order.customer.address,
+        joinDate: order.orderDate,
+        lastOrder: order.orderDate,
+        totalInvoices: 1,
+      };
+    } else {
+      const lastOrderDate = dayjs(order.orderDate);
+      const currentLastOrderDate = dayjs(
+        customerSummary[customerName].lastOrder,
+      );
+
+      if (lastOrderDate.isAfter(currentLastOrderDate)) {
+        customerSummary[customerName].lastOrder =
+          lastOrderDate.format("DD MMMM YYYY");
+      }
+
+      customerSummary[customerName].totalInvoices += 1;
+    }
+  });
+
+  const summaryArray: ICustomer[] = Object.values(customerSummary);
+
+  return summaryArray;
 };
