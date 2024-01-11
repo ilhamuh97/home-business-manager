@@ -16,3 +16,11 @@ export const getCustomers = async (): Promise<Response> => {
     },
   });
 };
+
+export const getMenu = async (): Promise<Response> => {
+  return fetch(`${BASE_URL}/menu`, {
+    headers: {
+      Authorization: getToken(),
+    },
+  });
+};

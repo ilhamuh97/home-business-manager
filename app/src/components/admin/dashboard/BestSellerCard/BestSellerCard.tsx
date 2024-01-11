@@ -42,17 +42,21 @@ const BestSellerCard = (props: IProps) => {
 
     const tempMenuQuantities: IMenu[] = [];
     getFilteredOrder(orders, date, GRANULARITY).forEach((order) => {
-      order.menu.forEach(({ key, name, quantity }: IMenu) => {
+      order.menu.forEach(({ key, name, quantity = 0 }: IMenu) => {
         const existingMenusQuantity = tempMenuQuantities.find(
           (mQ) => mQ.key === key,
         );
-        existingMenusQuantity
-          ? (existingMenusQuantity.quantity += quantity)
-          : tempMenuQuantities.push({ key, name, quantity });
+
+        if (existingMenusQuantity) {
+          existingMenusQuantity.quantity =
+            (existingMenusQuantity.quantity || 0) + quantity;
+        } else {
+          tempMenuQuantities.push({ key, name, quantity });
+        }
       });
     });
 
-    tempMenuQuantities.sort((a, b) => b.quantity - a.quantity);
+    tempMenuQuantities.sort((a, b) => (b.quantity || 0) - (a.quantity || 0));
     setMenuQuantites(tempMenuQuantities);
   };
 

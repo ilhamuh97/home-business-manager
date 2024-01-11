@@ -10,5 +10,7 @@ export interface Menu {
   key?: string;
   name?: string;
   category?: string;
+  normalPrice?: number;
+  cafePrice?: number;
   price?: number;
 }

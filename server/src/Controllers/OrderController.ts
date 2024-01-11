@@ -19,7 +19,7 @@ import { RawMenu } from '../types/Menu.model';
 
 export class OrderController {
   public static async getAllOrders(
-    req: Request,
+    _: Request,
     res: Response,
     next: NextFunction,
   ): Promise<void> {

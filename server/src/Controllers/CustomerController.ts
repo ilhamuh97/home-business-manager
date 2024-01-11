@@ -9,7 +9,7 @@ import { rawCustomersToCustomer } from '../utils/objectManipulation';
 
 export class CustomerController {
   public static async getAllCustomers(
-    req: Request,
+    _: Request,
     res: Response,
     next: NextFunction,
   ): Promise<void> {

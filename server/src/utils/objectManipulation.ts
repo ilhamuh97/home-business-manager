@@ -59,6 +59,26 @@ export function rawCustomersToCustomer(
   });
 }
 
+export function rawMenuToMenu(rawMenu: Partial<RawMenu>[]): Menu[] {
+  return rawMenu.map((menu: Partial<RawMenu>) => {
+    const {
+      Key: menuKey = '',
+      Name: menuName = '',
+      Category: menuCategory = '',
+      'Normal Price': menuNormalPrice = '',
+      'Cafe Price': menuCafePrice = '',
+    } = menu;
+
+    return {
+      name: menuName,
+      key: menuKey,
+      category: menuCategory,
+      normalPrice: parseFloat(menuNormalPrice) || 0,
+      cafePrice: parseFloat(menuCafePrice) || 0,
+    } as Menu;
+  });
+}
+
 export function rawOrderToOrder(
   orderRows: Partial<RawOrder>[],
   menuRows: Partial<RawMenu>[],

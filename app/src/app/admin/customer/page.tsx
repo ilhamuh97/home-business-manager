@@ -4,7 +4,7 @@ import CustomersListCard from "@/components/admin/customer/CustomersListCard/Cus
 import StatisticsCards from "@/components/admin/customer/StatisticsCards/StatisticsCards";
 import { ICustomer } from "@/models/customer.model";
 import { IOrder } from "@/models/order.model";
-import { getCustomers, getOrders } from "@/services/dashboard.service";
+import { getOrders } from "@/services/dashboard.service";
 import { handleApiError } from "@/utils/error";
 import { generateCustomerInvoiceSummary } from "@/utils/order";
 import { Col, Row, Spin, Typography, message } from "antd";
@@ -37,7 +37,6 @@ export default function Home() {
       fetchData();
     }
   }, [rawOrders]);
-  console.log(rawOrders);
   return (
     <main>
       <Spin tip="Loading" size="small" spinning={isLoading}>

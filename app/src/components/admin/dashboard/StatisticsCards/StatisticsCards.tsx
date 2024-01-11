@@ -43,7 +43,7 @@ const StatisticsCards = (props: IProps) => {
       return (
         total +
         order.menu.reduce(
-          (menuTotal: number, menu: IMenu) => menuTotal + menu.quantity,
+          (menuTotal: number, menu: IMenu) => menuTotal + (menu.quantity || 0),
           0,
         )
       );
