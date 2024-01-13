@@ -87,7 +87,7 @@ const OrderStatusCard = (props: IProps) => {
     },
   };
 
-  const handleChange: DatePickerProps["onChange"] = (date, dateString) => {
+  const handleChange: DatePickerProps["onChange"] = (_, dateString) => {
     if (dateString) {
       const momentDate = dayjs(dateString).toString();
       setDateRange(momentDate);

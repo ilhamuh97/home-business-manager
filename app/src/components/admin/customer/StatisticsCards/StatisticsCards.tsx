@@ -64,6 +64,7 @@ const StatisticsCards = (props: IProps) => {
           title="Order in this month"
           value={ordersThisMonth}
           hidePercentage={true}
+          valueStyle={{ color: "#0958d9" }}
         />
       </Col>
       <Col span={8}>
@@ -75,6 +76,9 @@ const StatisticsCards = (props: IProps) => {
             newCustomerLastMonth,
           )}
           dateRange="monthly"
+          valueStyle={{
+            color: "#3f8600",
+          }}
         />
       </Col>
     </>

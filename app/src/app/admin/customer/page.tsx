@@ -1,5 +1,6 @@
 "use client";
 
+import CustomerGrowth from "@/components/admin/customer/CustomerGrowth/CustomerGrowth";
 import CustomersListCard from "@/components/admin/customer/CustomersListCard/CustomersListCard";
 import StatisticsCards from "@/components/admin/customer/StatisticsCards/StatisticsCards";
 import { ICustomer } from "@/models/customer.model";
@@ -37,12 +38,16 @@ export default function Home() {
       fetchData();
     }
   }, [rawOrders]);
+
   return (
     <main>
       <Spin tip="Loading" size="small" spinning={isLoading}>
         <Typography.Title level={5}>Customer</Typography.Title>
         <Row gutter={[10, 10]}>
           <StatisticsCards customers={customers} />
+          <Col span={24}>
+            <CustomerGrowth customers={customers} />
+          </Col>
           <Col span={24}>
             <CustomersListCard orders={rawOrders} />
           </Col>

@@ -2,6 +2,7 @@
 
 import BestSellerCard from "@/components/admin/dashboard/BestSellerCard/BestSellerCard";
 import MenuList from "@/components/admin/menu/MenuList/MenuList";
+import MenuOrderedNumberCard from "@/components/admin/menu/MenuOrderedNumberCard/MenuOrderedNumberCard";
 import StatisticsCards from "@/components/admin/menu/StatisticsCards/StatisticsCards";
 import { IMenu } from "@/models/menu.model";
 import { IOrder } from "@/models/order.model";
@@ -50,14 +51,15 @@ export default function Home() {
         <Typography.Title level={5}>Menu</Typography.Title>
         <Row gutter={[10, 10]}>
           <StatisticsCards menu={rawMenu} orders={rawOrders} />
+          <Col span={16}>
+            <MenuOrderedNumberCard menu={rawMenu} orders={rawOrders} />
+          </Col>
           <Col span={8}>
             <BestSellerCard orders={rawOrders} />
           </Col>
-          <Col span={16}>
+          <Col span={24}>
             <MenuList menu={rawMenu} />
           </Col>
-          <Col span={12}></Col>
-          <Col span={12}></Col>
         </Row>
       </Spin>
     </main>
