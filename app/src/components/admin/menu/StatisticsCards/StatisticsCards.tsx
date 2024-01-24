@@ -48,7 +48,6 @@ const StatisticsCards = (props: IProps) => {
       const overallAverage =
         totalMenus / Object.values(monthlyMenuCounts).length || 0;
 
-      console.log(monthlyMenuCounts);
       setOverallAverage(overallAverage);
       setTotalMenus(totalMenus);
       setMenuOrderedCurrMonth(

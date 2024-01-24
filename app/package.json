@@ -11,6 +11,7 @@
   "dependencies": {
     "@ant-design/cssinjs": "^1.17.2",
     "@react-oauth/google": "^0.12.1",
+    "@reduxjs/toolkit": "^2.0.1",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "antd": "^5.11.1",
     "apexcharts": "^3.44.0",
@@ -23,6 +24,7 @@
     "react-apexcharts": "^1.4.1",
     "react-dom": "^18",
     "react-icons": "^4.12.0",
+    "react-redux": "^9.1.0",
     "run": "^1.4.0",
     "sass": "^1.69.5",
     "start": "^5.1.0"

@@ -2,65 +2,39 @@
 
 import { useEffect, useState } from "react";
 import { Col, Row, Spin, Typography, message } from "antd";
-import { getCustomers, getOrders } from "@/services/dashboard.service";
-import dayjs from "dayjs";
+import { useAppSelector } from "@/lib/hooks";
 import BestSellerCard from "@/components/admin/dashboard/BestSellerCard/BestSellerCard";
 import LoyalCustomersCard from "@/components/admin/dashboard/LoyalCustomersCard/LoyalCustomersCard";
 import OngoingOrdersCard from "@/components/admin/dashboard/OngoingOrdersCard/OngoingOrdersCard";
 import RevenueCard from "@/components/admin/dashboard/RevenueCard/RevenueCard";
 import StatisticsCards from "@/components/admin/dashboard/StatisticsCards/StatisticsCards";
-import { ICustomer } from "@/models/customer.model";
 import { IFeedBack, IOrder } from "@/models/order.model";
-import { handleApiErrors } from "@/utils/error";
+import dayjs from "dayjs";
 
 export default function Home() {
-  const [rawOrders, setRawOrders] = useState<IOrder[]>([]);
+  const orderSlice = useAppSelector((state) => state.orderSlice);
   const [orders, setOrders] = useState<IOrder[]>([]);
-  const [customers, setCustomers] = useState<ICustomer[]>([]);
   const [prevYearOrders, setPrevYearOrders] = useState<IOrder[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
+    setIsLoading(orderSlice.loading);
 
-        const [orderResponse, customerResponse] = await Promise.all([
-          getOrders(),
-          getCustomers(),
-        ]);
+    if (orderSlice.success) {
+      const orderDataDone: IOrder[] = orderSlice.orders.filter(
+        (order: IOrder) => order.extraInformation.feedback === IFeedBack.DONE,
+      );
 
-        const [ordersResult, customerResult] = await handleApiErrors([
-          orderResponse,
-          customerResponse,
-        ]);
-        setRawOrders(ordersResult.data);
-        setCustomers(customerResult.data);
+      setOrders([...orderDataDone]);
 
-        const orderDataDone: IOrder[] = ordersResult.data.filter(
-          (order: IOrder) => order.extraInformation.feedback === IFeedBack.DONE,
-        );
-        setOrders(orderDataDone);
-
-        const currYear = dayjs();
-        setPrevYearOrders(
-          orderDataDone.filter(
-            (order: IOrder) =>
-              dayjs(order.orderDate).diff(currYear, "year") < 1,
-          ),
-        );
-      } catch (error: any) {
-        console.log(error);
-        message.error(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (!orders.length) {
-      fetchData();
+      const currYear = dayjs();
+      setPrevYearOrders(
+        orderDataDone.filter(
+          (order: IOrder) => dayjs(order.orderDate).diff(currYear, "year") < 1,
+        ),
+      );
     }
-  }, [orders]);
+  }, [orderSlice]);
 
   return (
     <main>
@@ -75,7 +49,7 @@ export default function Home() {
             <BestSellerCard orders={prevYearOrders} />
           </Col>
           <Col span={12}>
-            <OngoingOrdersCard orders={rawOrders} />
+            <OngoingOrdersCard orders={orders} />
           </Col>
           <Col span={12}>
             <LoyalCustomersCard orders={orders} />

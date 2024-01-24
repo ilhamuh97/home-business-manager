@@ -11,7 +11,8 @@ interface IProps {
 }
 
 const OrderStatusCard = (props: IProps) => {
-  const [orders, setOrders] = useState<IOrder[]>([]);
+  const { orders = [] } = props;
+  const [filteredOrders, setFilteredOrders] = useState<IOrder[]>([]);
   const GRANULARITY: OpUnitType = "month";
   const disabledDate: RangePickerProps["disabledDate"] = (current) => {
     return current && current > dayjs().startOf("month");
@@ -21,16 +22,12 @@ const OrderStatusCard = (props: IProps) => {
   useEffect(() => {
     if (dateRange) {
       const currDate = dayjs(dateRange);
-      const filteredOrder = getFilteredOrder(
-        props.orders,
-        currDate,
-        GRANULARITY,
-      );
-      setOrders(filteredOrder);
+      const filteredOrder = getFilteredOrder(orders, currDate, GRANULARITY);
+      setFilteredOrders(filteredOrder);
     } else {
-      setOrders(props.orders);
+      setFilteredOrders(orders);
     }
-  }, [props.orders, dateRange]);
+  }, [orders, dateRange]);
 
   const dateRangeString = useCallback((dateRange: string): string => {
     if (!dateRange) {
@@ -39,19 +36,19 @@ const OrderStatusCard = (props: IProps) => {
     return `in ${dayjs(dateRange).format("MMMM YYYY").toString()}`;
   }, []);
 
-  const doneOrders = orders.filter(
+  const doneOrders = filteredOrders.filter(
     (order) => order.extraInformation.feedback === IFeedBack.DONE,
   ).length;
-  const deliveredOrders = orders.filter(
+  const deliveredOrders = filteredOrders.filter(
     (order) => order.extraInformation.feedback === IFeedBack.DELIVERED,
   ).length;
-  const paidOrders = orders.filter(
+  const paidOrders = filteredOrders.filter(
     (order) => order.extraInformation.feedback === IFeedBack.PAID,
   ).length;
-  const canceledOrders = orders.filter(
+  const canceledOrders = filteredOrders.filter(
     (order) => order.extraInformation.feedback === IFeedBack.CANCELED,
   ).length;
-  const notStatusOrders = orders.filter(
+  const notStatusOrders = filteredOrders.filter(
     (order) => order.extraInformation.feedback === IFeedBack.NOSTATUS,
   ).length;
 

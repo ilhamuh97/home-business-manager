@@ -12,6 +12,7 @@ interface IProps {
 }
 
 interface IDataSource {
+  key: string;
   name: string;
   phoneNumber: string;
   address: string;
@@ -26,6 +27,7 @@ const CustomersListCard = (props: IProps) => {
   const dataSource: IDataSource[] = generateCustomerInvoiceSummary(orders)
     .map((customer) => {
       return {
+        key: customer.phoneNumber,
         name: customer.name,
         phoneNumber: customer.phoneNumber,
         address: customer.address,

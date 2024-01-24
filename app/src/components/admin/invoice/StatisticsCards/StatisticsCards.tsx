@@ -12,7 +12,7 @@ interface IProps {
 }
 
 const StatisticsCards = (props: IProps) => {
-  const { orders } = props;
+  const { orders = [] } = props;
   const doneOrders = orders.filter(
     (order) => order.extraInformation.feedback === IFeedBack.DONE,
   );

@@ -32,8 +32,6 @@ const CustomerGrowth = (props: IProps) => {
   const [selectedDateRange, setSelectedDateRange] = useState<RevenuDateRange>(
     RevenuDateRange.MONTHLY,
   );
-  console.log(customers);
-
   const [monthlyData, setMonthlyData] = useState<ISeriesAndCategories>({
     series: [],
     categories: [],
@@ -62,8 +60,6 @@ const CustomerGrowth = (props: IProps) => {
       return newCustomers.length;
     });
 
-    console.log(monthlyCounts);
-
     const result: IRevenueData[] = [
       {
         name: "New customers",
@@ -80,8 +76,6 @@ const CustomerGrowth = (props: IProps) => {
       series: result,
       categories: categories.reverse(),
     });
-
-    console.log("result", result);
   }, [customers]);
 
   const updateData = useCallback(

@@ -31,6 +31,7 @@ enum RevenuDateRange {
 }
 
 const RevenueCard = (props: IProps) => {
+  const { data = [] } = props;
   const [selectedDateRange, setSelectedDateRange] = useState<RevenuDateRange>(
     RevenuDateRange.MONTHLY,
   );
@@ -45,7 +46,7 @@ const RevenueCard = (props: IProps) => {
 
   const calculateMonthlyData = useCallback(() => {
     const thisYear = dayjs().startOf("year");
-    const data = props.data.filter(
+    const filteredData = data.filter(
       (order) => order.extraInformation.feedback === "done",
     );
 
@@ -58,7 +59,7 @@ const RevenueCard = (props: IProps) => {
             .clone()
             .startOf("year")
             .add(monthIndex, "month");
-          const seriesDataCurrYear = data.reduce((count, order) => {
+          const seriesDataCurrYear = filteredData.reduce((count, order) => {
             const priceInK = order.payment.totalPrice / 1000;
             const orderDate = dayjs(order.orderDate);
             return (
@@ -97,12 +98,12 @@ const RevenueCard = (props: IProps) => {
         "Dec",
       ],
     });
-  }, [props.data]);
+  }, [data]);
 
   const calculateWeeklyData = useCallback((): void => {
     const last6Months = dayjs().subtract(6, "month").startOf("week");
     const currentWeek = dayjs().startOf("week");
-    const orders: IOrder[] = props.data;
+    const orders: IOrder[] = data;
     const resultArray: number[] = [];
     const calendarWeeks: string[] = [];
 
@@ -131,7 +132,7 @@ const RevenueCard = (props: IProps) => {
       ],
       categories: calendarWeeks,
     });
-  }, [props.data]);
+  }, [data]);
 
   const updateData = useCallback(
     (key: RevenuDateRange) => {

@@ -1,7 +1,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Button, Layout, Menu, Typography, Dropdown, MenuProps } from "antd";
+import {
+  Button,
+  Layout,
+  Menu,
+  Typography,
+  Dropdown,
+  MenuProps,
+  message,
+} from "antd";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { useRouter, usePathname } from "next/navigation";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
@@ -9,16 +18,21 @@ import { SIDEBAR_ITEMS } from "@/constants/sidebarItems";
 import { MdFoodBank } from "react-icons/md";
 import { getToken, logout } from "@/utils/auth";
 import styles from "./layout.module.scss";
+import { fetchOrders } from "@/lib/features/order/orderSlice";
+import { fetchMenu } from "@/lib/features/menu/menuSlice";
 
-export default function AboutLayout({
+export default function AdminLayout({
   children, // will be a page or nested layout
 }: {
   children: React.ReactNode;
 }) {
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isAuth, setIsAuth] = useState<boolean>(false);
+  const orderSlice = useAppSelector((state) => state.orderSlice);
+  const menuSlice = useAppSelector((state) => state.menuSlice);
   const { Header, Content, Footer, Sider } = Layout;
 
   useEffect(() => {
@@ -26,6 +40,8 @@ export default function AboutLayout({
       const token = getToken();
       if (token) {
         setIsAuth(true);
+        dispatch(fetchOrders([]));
+        dispatch(fetchMenu([]));
       } else {
         setIsAuth(false);
         router.push("/login");
@@ -33,14 +49,43 @@ export default function AboutLayout({
     };
 
     checkAuthentication();
-  }, [router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const error = [menuSlice, orderSlice].find((slice) => {
+      return !slice.success && slice.message !== "";
+    });
+
+    if (error) {
+      if (error.message === "Failed to fetch user data") {
+        logout();
+        router.push("/login");
+      } else {
+        message.error(error.message);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    menuSlice.success,
+    orderSlice.success,
+    menuSlice.message,
+    orderSlice.message,
+    router,
+  ]);
 
   const toggleCollapsed = () => {
     setCollapsed((prevCollapsed) => !prevCollapsed);
   };
 
   const onMenuClick = ({ key }: any): void => {
-    router.push(key);
+    const token = getToken();
+    if (!token) {
+      setIsAuth(false);
+      router.push("/login");
+    } else {
+      router.push(key);
+    }
   };
 
   const items: MenuProps["items"] = [

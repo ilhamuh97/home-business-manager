@@ -21,19 +21,18 @@ export const handleApiErrors = (responses: Response[]) => {
   );
 };
 
-export const handleApiError = (response: Response) => {
+export const handleApiError = async (response: Response) => {
   if (!response.ok) {
-    return response.json().then((error) => {
-      switch (response.status) {
-        case 401:
-          message.error(error.message);
-          logout();
-          break;
+    const error = await response.json();
+    switch (response.status) {
+      case 401:
+        message.error(error.message);
+        logout();
+        break;
 
-        default:
-          throw new Error(error.message);
-      }
-    });
+      default:
+        throw new Error(error.message);
+    }
   }
   return response.json();
 };

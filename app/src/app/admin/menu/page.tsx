@@ -4,61 +4,29 @@ import BestSellerCard from "@/components/admin/dashboard/BestSellerCard/BestSell
 import MenuList from "@/components/admin/menu/MenuList/MenuList";
 import MenuOrderedNumberCard from "@/components/admin/menu/MenuOrderedNumberCard/MenuOrderedNumberCard";
 import StatisticsCards from "@/components/admin/menu/StatisticsCards/StatisticsCards";
-import { IMenu } from "@/models/menu.model";
-import { IOrder } from "@/models/order.model";
-import { getMenu, getOrders } from "@/services/dashboard.service";
-import { handleApiErrors } from "@/utils/error";
-import { Col, Row, Spin, Typography, message } from "antd";
-import { useEffect, useState } from "react";
+import { useAppSelector } from "@/lib/hooks";
+import { Col, Row, Spin, Typography } from "antd";
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [rawOrders, setRawOrders] = useState<IOrder[]>([]);
-  const [rawMenu, setRawMenu] = useState<IMenu[]>([]);
+  const orders = useAppSelector((state) => state.orderSlice.orders);
+  const ordersLoading = useAppSelector((state) => state.orderSlice.loading);
+  const menu = useAppSelector((state) => state.menuSlice.menu);
+  const menuLoading = useAppSelector((state) => state.menuSlice.loading);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-
-        const [orderResponse, menuResponse] = await Promise.all([
-          getOrders(),
-          getMenu(),
-        ]);
-
-        const [ordersResult, menuResult] = await handleApiErrors([
-          orderResponse,
-          menuResponse,
-        ]);
-
-        setRawOrders(ordersResult.data);
-        setRawMenu(menuResult.data);
-      } catch (error: any) {
-        console.log(error);
-        message.error(error.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (!rawOrders.length) {
-      fetchData();
-    }
-  }, [rawOrders]);
   return (
     <main>
-      <Spin tip="Loading" size="small" spinning={isLoading}>
+      <Spin tip="Loading" size="small" spinning={ordersLoading || menuLoading}>
         <Typography.Title level={5}>Menu</Typography.Title>
         <Row gutter={[10, 10]}>
-          <StatisticsCards menu={rawMenu} orders={rawOrders} />
+          <StatisticsCards menu={menu} orders={orders} />
           <Col span={16}>
-            <MenuOrderedNumberCard menu={rawMenu} orders={rawOrders} />
+            <MenuOrderedNumberCard menu={menu} orders={orders} />
           </Col>
           <Col span={8}>
-            <BestSellerCard orders={rawOrders} />
+            <BestSellerCard orders={orders} />
           </Col>
           <Col span={24}>
-            <MenuList menu={rawMenu} />
+            <MenuList menu={menu} />
           </Col>
         </Row>
       </Spin>
