@@ -110,6 +110,8 @@ const BestSellerCard = (props: IProps) => {
   return (
     <Card title={`Best seller ${dateRangeString(dateRange)}`} size="small">
       <DatePicker
+        id="date"
+        name="date"
         picker="month"
         onChange={handleChange}
         defaultValue={dayjs().subtract(1, "month").startOf("m")}

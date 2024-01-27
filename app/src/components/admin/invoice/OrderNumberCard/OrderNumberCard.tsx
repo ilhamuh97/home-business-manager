@@ -185,6 +185,8 @@ const RevenueCard = (props: IProps) => {
   return (
     <Card title="Total completed invoices report" size="small">
       <Radio.Group
+        id="date-range"
+        name="date-range"
         style={{ marginBottom: 8 }}
         defaultValue={selectedDateRange}
         size="small"

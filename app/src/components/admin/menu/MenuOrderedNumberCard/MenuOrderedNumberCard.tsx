@@ -151,6 +151,8 @@ const MenuOrderedNumberCard = (props: IProps) => {
   return (
     <Card title="Ordered menu" size="small">
       <Radio.Group
+        id="date-range"
+        name="date-range"
         style={{ marginBottom: 8 }}
         defaultValue={selectedDateRange}
         size="small"

@@ -104,6 +104,8 @@ const OrderStatusCard = (props: IProps) => {
       <Row gutter={[10, 10]}>
         <Col span={24}>
           <DatePicker
+            id="date"
+            name="date"
             picker="month"
             onChange={handleChange}
             disabledDate={disabledDate}
