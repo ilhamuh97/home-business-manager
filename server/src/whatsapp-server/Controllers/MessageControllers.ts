@@ -11,7 +11,7 @@ import {
   getRowsObject,
   getValue,
 } from '../../utils/googleSheets';
-import CommandHandler from '../commands/CommandHandler';
+import CommandHandler from '../handlers/CommandHandler';
 import { RawOrder } from '../../types/Order.model';
 
 class MessageController {
@@ -26,13 +26,13 @@ class MessageController {
   handleIncomingMessage(message: WAWebJS.Message) {
     if (message.body.startsWith('/')) {
       this.message = message;
-      this.commandHandler.handleCommand(message);
+      this.commandHandler.handleCommand(message.body);
     } else {
       console.log('Received message:', message.body);
     }
   }
 
-  async handleSendOrderCommand(command: string, args: string[]) {
+  async handleSendOrderCommand(args: string[]) {
     // Implement logic to handle the "/send-order" command and process order data
     const newOrder = this.parseOrderData(args);
     newOrder['Order Date'] = formatDateToDDMonthYYYY(new Date());
@@ -69,28 +69,25 @@ class MessageController {
 
       await sheet.addRow(newOrder);
       const parsedObject = JSON.parse(JSON.stringify(newOrder));
-      let readableMessage = `Send an order ${newOrder.Invoice} with data:\n`;
+      let replyMessage = `Send an order ${newOrder.Invoice} with data:\n`;
       for (const [key, value] of Object.entries(parsedObject)) {
         if (value != '' || value != undefined) {
-          readableMessage += `${key}: ${value}\n`;
+          replyMessage += `${key}: ${value}\n`;
         }
       }
-      await this.client.sendMessage(this.message.from, readableMessage);
+      await this.client.sendMessage(this.message.from, replyMessage);
     } catch (error: any) {
       await this.client.sendMessage(this.message.from, error.message);
     }
   }
 
-  handleGetTemplateCommand(command: string) {
+  handleGetTemplateCommand(args: string[]) {
     // Implement logic to handle the "/get-template" command
-    console.log('Requested template');
+    const command = args[0];
+    this.commandHandler.handleCommand(command, true);
   }
 
-  async handleUpdateCommand(
-    command_: string,
-    args: string[],
-    params: string[],
-  ) {
+  async handleUpdateCommand(args: string[], params: string[]) {
     // Implement logic to handle the "/update/:id" command with the provided ID
     const invoice = params[0];
     const updateOrder = this.parseOrderData(args);
@@ -128,19 +125,19 @@ class MessageController {
       await requestedOrder.save();
 
       const parsedObject = JSON.parse(JSON.stringify(requestedOrder));
-      let readableMessage = `Updating order ${invoice} with data:\n`;
+      let replyMessage = `Updating order ${invoice} with data:\n`;
       for (const [key, value] of Object.entries(parsedObject)) {
         if (value != '' || value != undefined) {
-          readableMessage += `${key}: ${value}\n`;
+          replyMessage += `${key}: ${value}\n`;
         }
       }
-      await this.client.sendMessage(this.message.from, readableMessage);
+      await this.client.sendMessage(this.message.from, replyMessage);
     } catch (error: any) {
       await this.client.sendMessage(this.message.from, error.message);
     }
   }
 
-  async handleGetOrderCommand(command: string, args: string[]) {
+  async handleGetOrderCommand(args: string[]) {
     // Implement logic to handle the "/get-order/:id" command with the provided ID
     const invoice = args[0];
     try {
@@ -157,26 +154,38 @@ class MessageController {
       }
 
       const parsedObject = JSON.parse(JSON.stringify(requestedOrder));
-      let readableMessage = 'Here are the details:\n';
+      let replyMessage = 'Here are the details:\n';
       for (const [key, value] of Object.entries(parsedObject)) {
         if (value != '' || value != undefined) {
-          readableMessage += `${key}: ${value}\n`;
+          replyMessage += `${key}: ${value}\n`;
         }
       }
-      await this.client.sendMessage(this.message.from, readableMessage);
+      await this.client.sendMessage(this.message.from, replyMessage);
     } catch (error: any) {
       await this.client.sendMessage(this.message.from, error.message);
     }
   }
 
-  handleGetCommandsCommand(command: string) {
+  async handleGetCommandsCommand() {
     // Implement logic to handle the "/get-commands" command
-    console.log(
-      'Available commands: /send-order, /get-template, /update/:id, /get-order/:id, /get-commands',
-    );
+    try {
+      const replyMessage =
+        'Available commands:\n/send-order\n/get-template <Command>\n/update-order <Invoice Number>\n/get-order <Invoice Number>\n/get-commands';
+      await this.client.sendMessage(this.message.from, replyMessage);
+    } catch (error: any) {
+      await this.client.sendMessage(this.message.from, error.message);
+    }
   }
 
-  parseOrderData(args: string[]): RawOrder {
+  async sendTemplate(replyMessage: string) {
+    try {
+      await this.client.sendMessage(this.message.from, replyMessage);
+    } catch (error: any) {
+      await this.client.sendMessage(this.message.from, error.message);
+    }
+  }
+
+  private parseOrderData(args: string[]): RawOrder {
     // Implement logic to parse order data from the message body
     // Example: "/send-order invoice: N1023001 orderDate: 05 October 2023 ..."
     // Extract data and return an object
