@@ -98,3 +98,5 @@ credentials.json
 whatsapp-session.json
 qrcode.png
 mybot/
+
+build/
