@@ -8,6 +8,7 @@ import { Client, LocalAuth, NoAuth } from 'whatsapp-web.js';
 import qrcode from 'qrcode-terminal';
 import MessageController from './whatsapp-server/Controllers/MessageControllers';
 import errorHandler from 'errorhandler';
+import api from './api';
 
 const app = express();
 
@@ -32,6 +33,7 @@ client.on('message', (message) => {
 
 app.use(cors());
 app.set('view engine', 'ejs');
+app.use('/api/v1', api);
 app.set('port', process.env.PORT || 3000);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
