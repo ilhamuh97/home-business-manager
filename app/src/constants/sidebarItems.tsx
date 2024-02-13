@@ -1,6 +1,9 @@
 import { SettingOutlined, BarChartOutlined } from "@ant-design/icons";
 
-export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL_DEV;
+export const BASE_URL =
+  process.env.NEXT_PUBLIC_DEPLOYMENT === "development"
+    ? process.env.NEXT_PUBLIC_BASE_URL_DEV
+    : process.env.NEXT_PUBLIC_BASE_URL_PROD;
 export const SIDEBAR_ITEMS = [
   {
     key: "dashboard",
