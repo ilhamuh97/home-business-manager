@@ -1,6 +1,5 @@
 {
   "version": 2,
   "buildCommand": "npm run build",
-  "installCommand": "npm install --force && npm install --legacy-peer-deps",
-  "rewrites": [{ "source": "/api/(.*)", "destination": "/api" }]
+  "installCommand": "npm install --legacy-peer-deps"
 }
