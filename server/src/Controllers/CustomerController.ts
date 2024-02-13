@@ -21,7 +21,7 @@ export class CustomerController {
       );
       const customers: Customer[] = rawCustomersToCustomer(rawCustomers);
 
-      res.send({
+      res.status(200).json({
         data: customers,
         message: 'Successfully get all customers',
         status: 'success',

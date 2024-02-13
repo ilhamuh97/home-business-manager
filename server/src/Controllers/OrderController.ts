@@ -34,7 +34,7 @@ export class OrderController {
         await orderSheet.getRows<RawOrder>(),
       );
       const orders: Order[] = rawOrderToOrder(orderRows, menuRows);
-      res.send({
+      res.status(200).json({
         data: orders,
         message: 'Successfully get all orders',
         status: 'success',
@@ -63,7 +63,7 @@ export class OrderController {
         };
       }
 
-      res.send({
+      res.status(200).json({
         data: requestedOrder,
         message: 'Successfully get an order',
         status: 'success',
@@ -162,7 +162,7 @@ export class OrderController {
       });
       await requestedOrder.save();
 
-      res.send({
+      res.status(200).json({
         data: requestedOrder.toObject(),
         message: 'Successfully update an order',
         status: 'success',
@@ -195,7 +195,7 @@ export class OrderController {
 
       await requestedOrder.delete();
 
-      res.send({
+      res.status(200).json({
         message: `Successfully delete an order ${invoice}`,
         status: 'success',
       });

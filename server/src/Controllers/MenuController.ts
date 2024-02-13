@@ -21,7 +21,7 @@ export class MenuController {
       );
       const menu: Menu[] = rawMenuToMenu(rawMenu);
 
-      res.send({
+      res.status(200).json({
         data: menu,
         message: 'Successfully get all menu',
         status: 'success',
