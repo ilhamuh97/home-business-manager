@@ -4,14 +4,16 @@ import 'dotenv/config';
 import express from 'express';
 import routes from './routes/routes';
 import cors from 'cors';
-import { Client, LocalAuth, NoAuth } from 'whatsapp-web.js';
-import qrcode from 'qrcode-terminal';
+import { Client, LocalAuth } from 'whatsapp-web.js';
 import MessageController from './whatsapp-server/Controllers/MessageControllers';
 import errorHandler from 'errorhandler';
 
 const app = express();
 
 const client = new Client({
+  authStrategy: new LocalAuth({
+    dataPath: process.env.WA_FOLDER,
+  }),
   puppeteer: {
     headless: true,
     args: [
