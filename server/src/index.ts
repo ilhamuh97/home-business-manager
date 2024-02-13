@@ -7,6 +7,7 @@ import cors from 'cors';
 import { Client, LocalAuth, NoAuth } from 'whatsapp-web.js';
 import qrcode from 'qrcode-terminal';
 import MessageController from './whatsapp-server/Controllers/MessageControllers';
+import errorHandler from 'errorhandler';
 
 const app = express();
 
@@ -36,6 +37,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use('/', routes);
+
+/**
+ * Error Handler. Provides full stack
+ */
+if (process.env.NODE_ENV === 'development') {
+  app.use(errorHandler());
+}
+
+/**
+ * Start Express server.
+ */
+const server = app.listen(app.get('port'), () => {
+  return console.log(`Server is listening on ${app.get('port')}`);
+});
 
 client.initialize();
 
