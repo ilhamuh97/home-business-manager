@@ -9,7 +9,12 @@
     "strict": true,
     "esModuleInterop": true,
     "types": ["node"],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "../node_modules/@types",
+      "../../node_modules/@types"
+    ]
   },
   "include": ["src/**/*"],
   "exclude": ["src/**/*.spec.ts"]
