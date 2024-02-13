@@ -7,15 +7,8 @@
     "start": "nodemon src/index.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "ts.check": "tsc --project tsconfig.json",
-    "vercel-build": "echo hello",
-    "add-build": "git add dist"
+    "ts.check": "tsc --project tsconfig.json"
   },
-  "pre-commit": [
-    "ts.check",
-    "build",
-    "add-build"
-  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
