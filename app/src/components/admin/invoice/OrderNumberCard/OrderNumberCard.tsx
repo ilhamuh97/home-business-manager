@@ -46,7 +46,7 @@ const RevenueCard = (props: IProps) => {
 
   const calculateMonthlyData = useCallback(() => {
     const filteredData = data.filter(
-      (order) => order.extraInformation.feedback === "done",
+      (order) => order.extraInformation.feedback.toLowerCase() === "done",
     );
 
     let currentDate = dayjs();

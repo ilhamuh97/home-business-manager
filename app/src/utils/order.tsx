@@ -30,7 +30,8 @@ export const generateCustomerInvoiceSummary = (
   orders: IOrder[],
 ): ICustomer[] => {
   const filteredInvoices = orders.filter(
-    (order) => order.extraInformation.feedback !== IFeedBack.CANCELED,
+    (order) =>
+      order.extraInformation.feedback.toLowerCase() !== IFeedBack.CANCELED,
   );
 
   const customerSummary: any = {};

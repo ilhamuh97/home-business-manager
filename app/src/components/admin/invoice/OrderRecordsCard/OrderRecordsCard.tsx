@@ -30,7 +30,7 @@ const OrderRecordsCard = (props: IProps) => {
         invoice: order.invoice,
         orderDate: order.orderDate,
         shippingDate: order.shipmentDate,
-        status: order.extraInformation.feedback || "No processed",
+        status: order.extraInformation.feedback.toLowerCase() || "No processed",
         menus: order.menu,
         customer: order.customer,
       };

@@ -14,15 +14,16 @@ interface IProps {
 const StatisticsCards = (props: IProps) => {
   const { orders = [] } = props;
   const doneOrders = orders.filter(
-    (order) => order.extraInformation.feedback === IFeedBack.DONE,
+    (order) => order.extraInformation.feedback.toLowerCase() === IFeedBack.DONE,
   );
   const canceledOrders = orders.filter(
-    (order) => order.extraInformation.feedback === IFeedBack.CANCELED,
+    (order) =>
+      order.extraInformation.feedback.toLowerCase() === IFeedBack.CANCELED,
   );
   const inProgressOrders = orders.filter(
     (order) =>
-      order.extraInformation.feedback !== IFeedBack.DONE &&
-      order.extraInformation.feedback !== IFeedBack.CANCELED,
+      order.extraInformation.feedback.toLowerCase() !== IFeedBack.DONE &&
+      order.extraInformation.feedback.toLowerCase() !== IFeedBack.CANCELED,
   );
 
   const GRANULARITY: OpUnitType = "month";

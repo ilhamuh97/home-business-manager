@@ -45,58 +45,41 @@ const RevenueCard = (props: IProps) => {
   });
 
   const calculateMonthlyData = useCallback(() => {
-    const thisYear = dayjs().startOf("year");
     const filteredData = data.filter(
-      (order) => order.extraInformation.feedback === "done",
+      (order) => order.extraInformation.feedback.toLowerCase() === "done",
     );
 
-    const resultArray: IRevenueData[] = Array.from(
-      { length: 2 },
-      (_, index) => {
-        const beginYear = thisYear.clone().subtract(index, "year");
-        const yearData = Array.from({ length: 12 }, (_, monthIndex) => {
-          const date = beginYear
-            .clone()
-            .startOf("year")
-            .add(monthIndex, "month");
-          const seriesDataCurrYear = filteredData.reduce((count, order) => {
-            const priceInK = order.payment.totalPrice / 1000;
-            const orderDate = dayjs(order.orderDate);
-            return (
-              count +
-              (orderDate.isSame(date, "month") && orderDate.isSame(date, "year")
-                ? priceInK
-                : 0)
-            );
-          }, 0);
-          return seriesDataCurrYear;
-        });
+    let currentDate = dayjs();
+    let categories = [];
+    let results = [];
 
-        return {
-          name: beginYear.isBefore(thisYear, "year")
-            ? "Last year"
-            : "Current year",
-          data: yearData,
-        };
-      },
-    ).reverse();
+    for (let i = 0; i < 12; i++) {
+      categories.push(currentDate.format("MMMM YY"));
+
+      const seriesDataCurrYear = filteredData.reduce((count, order) => {
+        const priceInK = order.payment.totalPrice / 1000;
+        const orderDate = dayjs(order.orderDate);
+        return (
+          count +
+          (orderDate.isSame(currentDate, "month") &&
+          orderDate.isSame(currentDate, "year")
+            ? priceInK
+            : 0)
+        );
+      }, 0);
+      results.push(seriesDataCurrYear);
+
+      currentDate = currentDate.subtract(1, "month");
+    }
 
     setMonthlyData({
-      series: resultArray,
-      categories: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
+      series: [
+        {
+          name: "Monthly invoices",
+          data: results.reverse(),
+        },
       ],
+      categories: categories.reverse(),
     });
   }, [data]);
 

@@ -13,6 +13,7 @@ import {
 } from '../../utils/googleSheets';
 import CommandHandler from '../handlers/CommandHandler';
 import { RawOrder } from '../../types/Order.model';
+import { removeEmptyValues } from '../../utils/objectManipulation';
 
 class MessageController {
   client: Client;
@@ -68,7 +69,9 @@ class MessageController {
       }
 
       await sheet.addRow(newOrder);
-      const parsedObject = JSON.parse(JSON.stringify(newOrder));
+      const parsedObject = JSON.parse(
+        JSON.stringify(removeEmptyValues(newOrder)),
+      );
       let replyMessage = `Send an order ${newOrder.Invoice} with data:\n`;
       for (const [key, value] of Object.entries(parsedObject)) {
         if (value != '' || value != undefined) {
@@ -124,7 +127,9 @@ class MessageController {
       });
       await requestedOrder.save();
 
-      const parsedObject = JSON.parse(JSON.stringify(requestedOrder));
+      const parsedObject = JSON.parse(
+        JSON.stringify(removeEmptyValues(requestedOrder.toObject())),
+      );
       let replyMessage = `Updating order ${invoice} with data:\n`;
       for (const [key, value] of Object.entries(parsedObject)) {
         if (value != '' || value != undefined) {
@@ -186,25 +191,7 @@ class MessageController {
   }
 
   private parseOrderData(args: string[]): RawOrder {
-    // Implement logic to parse order data from the message body
-    // Example: "/send-order invoice: N1023001 orderDate: 05 October 2023 ..."
-    // Extract data and return an object
-    const orderData: RawOrder = {
-      Nr: '',
-      Discount: '',
-      Shipping: '',
-      TotalPrice: '',
-      Packaging: '',
-      Invoice: '',
-      Name: '',
-      'Phone Number': '',
-      Address: '',
-      'Order Date': '',
-      'Shipment Date': '',
-      'Payment Method': '',
-      Information: '',
-      FeedBack: '',
-    };
+    const orderData: any = {};
     args.forEach((arg) => {
       const [key, value] = arg.split(':');
       if (key && value) {

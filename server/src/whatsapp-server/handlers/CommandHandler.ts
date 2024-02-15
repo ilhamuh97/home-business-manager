@@ -102,8 +102,7 @@ class CommandHandler {
 
   private async generateUpdateOrderTemplate() {
     try {
-      const readableData = await getReadableRawOrder();
-      const template = `/update-order <Invoice Number>\n${readableData}`;
+      const template = `/update-order <Invoice Number>\n<Key>:<Value>`;
       return template;
     } catch (error: any) {
       return error.message;

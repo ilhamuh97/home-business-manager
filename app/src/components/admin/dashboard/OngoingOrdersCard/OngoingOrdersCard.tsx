@@ -25,8 +25,8 @@ const OngoingOrdersCard = (props: IProps) => {
   const ongoingOrders = (orders: IOrder[]) => {
     return orders.filter(
       (order) =>
-        order.extraInformation.feedback !== IFeedBack.DONE &&
-        order.extraInformation.feedback !== IFeedBack.CANCELED,
+        order.extraInformation.feedback.toLowerCase() !== IFeedBack.DONE &&
+        order.extraInformation.feedback.toLowerCase() !== IFeedBack.CANCELED,
     );
   };
 
@@ -37,7 +37,7 @@ const OngoingOrdersCard = (props: IProps) => {
         invoice: order.invoice,
         orderDate: order.orderDate,
         shippingDate: order.shipmentDate,
-        status: order.extraInformation.feedback || "No processed",
+        status: order.extraInformation.feedback.toLowerCase() || "no processed",
         menus: order.menu,
         customer: order.customer,
       };

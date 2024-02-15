@@ -132,7 +132,7 @@ const CustomerGrowth = (props: IProps) => {
   };
 
   return (
-    <Card title="Ordered menu" size="small">
+    <Card title="Customer growth" size="small">
       <Radio.Group
         id="date-range"
         name="date-range"

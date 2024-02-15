@@ -37,19 +37,22 @@ const OrderStatusCard = (props: IProps) => {
   }, []);
 
   const doneOrders = filteredOrders.filter(
-    (order) => order.extraInformation.feedback === IFeedBack.DONE,
+    (order) => order.extraInformation.feedback.toLowerCase() === IFeedBack.DONE,
   ).length;
   const deliveredOrders = filteredOrders.filter(
-    (order) => order.extraInformation.feedback === IFeedBack.DELIVERED,
+    (order) =>
+      order.extraInformation.feedback.toLowerCase() === IFeedBack.DELIVERED,
   ).length;
   const paidOrders = filteredOrders.filter(
-    (order) => order.extraInformation.feedback === IFeedBack.PAID,
+    (order) => order.extraInformation.feedback.toLowerCase() === IFeedBack.PAID,
   ).length;
   const canceledOrders = filteredOrders.filter(
-    (order) => order.extraInformation.feedback === IFeedBack.CANCELED,
+    (order) =>
+      order.extraInformation.feedback.toLowerCase() === IFeedBack.CANCELED,
   ).length;
   const notStatusOrders = filteredOrders.filter(
-    (order) => order.extraInformation.feedback === IFeedBack.NOSTATUS,
+    (order) =>
+      order.extraInformation.feedback.toLowerCase() === IFeedBack.NOSTATUS,
   ).length;
 
   const chartData = {

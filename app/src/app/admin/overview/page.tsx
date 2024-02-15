@@ -22,7 +22,8 @@ export default function Home() {
 
     if (orderSlice.success) {
       const orderDataDone: IOrder[] = orderSlice.orders.filter(
-        (order: IOrder) => order.extraInformation.feedback === IFeedBack.DONE,
+        (order: IOrder) =>
+          order.extraInformation.feedback.toLowerCase() === IFeedBack.DONE,
       );
 
       setOrders([...orderDataDone]);

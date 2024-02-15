@@ -15,7 +15,6 @@ const MonthlyChart = (props: IProps) => {
         height: 350,
         type: "line",
       },
-      colors: ["#CED4DC", "#008FFB"],
       stroke: {
         curve: "straight",
       },
