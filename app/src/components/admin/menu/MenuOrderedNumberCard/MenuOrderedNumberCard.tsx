@@ -87,8 +87,6 @@ const MenuOrderedNumberCard = (props: IProps) => {
       },
     );
 
-    resultArray.map(() => {});
-
     setMonthlyData({
       series: resultArray,
       categories: categories.reverse(),

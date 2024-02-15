@@ -1,8 +1,10 @@
 export const setToken = (data: any) => {
-  try {
-    localStorage.setItem("access_token", JSON.stringify(data));
-  } catch (error) {
-    console.error("Error saving token to localStorage:", error);
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.setItem("access_token", JSON.stringify(data));
+    } catch (error) {
+      console.error("Error saving token to localStorage:", error);
+    }
   }
 };
 
