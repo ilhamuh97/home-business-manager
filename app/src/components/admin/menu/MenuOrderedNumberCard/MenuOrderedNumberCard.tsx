@@ -5,8 +5,11 @@ import { IMenu } from "@/models/menu.model";
 import { IOrder } from "@/models/order.model";
 import { Card, Radio, RadioChangeEvent } from "antd";
 import MonthlyChart from "./MonthlyChart/MonthlyChart";
+import WeeklyChart from "./WeeklyChart/WeeklyChart";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore"; // import plugin
 
 dayjs.extend(weekOfYear);
+dayjs.extend(isSameOrBefore);
 
 interface IProps {
   menu: IMenu[];
@@ -70,7 +73,6 @@ const MenuOrderedNumberCard = (props: IProps) => {
       filteredInvoices.forEach((invoice) => {
         invoice.menu.forEach((menuItem) => {
           const menuKey = menuItem.key;
-
           result[menuKey].data[i] += menuItem.quantity;
         });
       });
@@ -93,12 +95,67 @@ const MenuOrderedNumberCard = (props: IProps) => {
     });
   }, [menu, orders]);
 
+  const calculateWeeklyData = useCallback(() => {
+    const last6Months = dayjs().subtract(6, "month").startOf("week");
+    const currentWeek = dayjs().startOf("week");
+    const calendarWeeks: string[] = [];
+    const result: any = {};
+
+    console.log();
+
+    menu.forEach((menuItem) => {
+      result[menuItem.key] = {
+        name: menuItem.name,
+        data: Array(currentWeek.diff(last6Months, "week") + 1).fill(0),
+      };
+    });
+
+    let i = 0;
+    for (
+      let date = last6Months.clone();
+      date.isSameOrBefore(currentWeek, "week");
+      date = date.add(1, "week")
+    ) {
+      const filteredInvoices = orders.filter((invoice) => {
+        const invoiceDate = dayjs(invoice.orderDate);
+        return invoiceDate.isSame(date, "week");
+      });
+
+      filteredInvoices.forEach((invoice) => {
+        invoice.menu.forEach((menuItem) => {
+          const menuKey = menuItem.key;
+          console.log(menuItem.quantity);
+          result[menuKey].data[i] += menuItem.quantity;
+        });
+      });
+
+      calendarWeeks.push(`CW ${date.week()}`);
+      i++;
+    }
+
+    console.log(result);
+
+    const resultArray: IRevenueData[] = Object.values<IRevenueData>(result).map(
+      (r: IRevenueData) => {
+        return {
+          name: r.name,
+          data: r.data,
+        };
+      },
+    );
+
+    setMonthlyData({
+      series: resultArray,
+      categories: calendarWeeks,
+    });
+  }, [menu, orders]);
+
   const updateData = useCallback(
     (key: RevenuDateRange) => {
       switch (key) {
         case RevenuDateRange.WEEKLY:
           setSelectedDateRange(RevenuDateRange.WEEKLY);
-          calculateMonthlyData();
+          calculateWeeklyData();
           break;
         case RevenuDateRange.MONTHLY:
           setSelectedDateRange(RevenuDateRange.MONTHLY);
@@ -109,7 +166,7 @@ const MenuOrderedNumberCard = (props: IProps) => {
           break;
       }
     },
-    [calculateMonthlyData],
+    [calculateMonthlyData, calculateWeeklyData],
   );
 
   useEffect(() => {
@@ -124,7 +181,7 @@ const MenuOrderedNumberCard = (props: IProps) => {
     switch (selectedDateRange) {
       case RevenuDateRange.WEEKLY:
         return (
-          <MonthlyChart
+          <WeeklyChart
             series={monthlyData.series}
             categories={monthlyData.categories}
           />

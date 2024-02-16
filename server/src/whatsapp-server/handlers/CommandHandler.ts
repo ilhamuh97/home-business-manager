@@ -34,7 +34,7 @@ class CommandHandler {
         this.handleGetCommandsCommand(isTemplate);
         break;
       default:
-        console.log('Unknown command:', command);
+        this.messageController.handleUnknownCommand(command);
         break;
     }
   }
@@ -114,7 +114,7 @@ class CommandHandler {
   }
 
   private generateGetTemplate(): string {
-    return '/get-template';
+    return '/get-template /<Command>';
   }
 
   private generateGetCommands(): string {

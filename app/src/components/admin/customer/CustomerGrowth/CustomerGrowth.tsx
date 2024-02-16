@@ -45,6 +45,8 @@ const CustomerGrowth = (props: IProps) => {
     const currentDate = dayjs();
     let categories: string[] = [];
 
+    console.log(customers);
+
     const lastTwelveMonths = Array.from({ length: 12 }, (_, index) =>
       currentDate.subtract(index, "month"),
     );
@@ -78,12 +80,50 @@ const CustomerGrowth = (props: IProps) => {
     });
   }, [customers]);
 
+  const countNewCustomersPerWeekly = useCallback(() => {
+    const calendarWeeks: string[] = [];
+    const last6Months = dayjs().subtract(6, "month").startOf("week");
+    const currentWeek = dayjs().startOf("week");
+
+    console.log(customers);
+
+    const data = Array(currentWeek.diff(last6Months, "week") + 1).fill(0);
+
+    let i = 0;
+    for (
+      let date = last6Months.clone();
+      date.isSameOrBefore(currentWeek, "week");
+      date = date.add(1, "week")
+    ) {
+      const filteredCustomer = customers.filter((customer) => {
+        const joinDate = dayjs(customer.joinDate);
+        return joinDate.isSame(date, "week");
+      });
+
+      data[i] = filteredCustomer.length;
+      calendarWeeks.push(`CW ${date.week()}`);
+      i++;
+    }
+
+    const result: IRevenueData[] = [
+      {
+        name: "New customers",
+        data,
+      },
+    ];
+
+    setMonthlyData({
+      series: result,
+      categories: calendarWeeks,
+    });
+  }, [customers]);
+
   const updateData = useCallback(
     (key: RevenuDateRange) => {
       switch (key) {
         case RevenuDateRange.WEEKLY:
           setSelectedDateRange(RevenuDateRange.WEEKLY);
-          countNewCustomersPerMonth();
+          countNewCustomersPerWeekly();
           break;
         case RevenuDateRange.MONTHLY:
           setSelectedDateRange(RevenuDateRange.MONTHLY);
@@ -94,7 +134,7 @@ const CustomerGrowth = (props: IProps) => {
           break;
       }
     },
-    [countNewCustomersPerMonth],
+    [countNewCustomersPerMonth, countNewCustomersPerWeekly],
   );
 
   const getMyChart = (selectedDateRange: RevenuDateRange) => {

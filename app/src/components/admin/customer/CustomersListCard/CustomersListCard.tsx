@@ -72,7 +72,7 @@ const CustomersListCard = (props: IProps) => {
   ];
 
   return (
-    <Card title="Customer list">
+    <Card title="Customers">
       <Table
         dataSource={dataSource}
         columns={columns}

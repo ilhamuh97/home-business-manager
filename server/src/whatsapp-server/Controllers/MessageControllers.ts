@@ -44,6 +44,21 @@ class MessageController {
       const existingInvoiceNumbers = orders.map((order) =>
         getValue(order['Invoice']),
       );
+
+      const sentKeys = Object.keys(newOrder);
+      const missingKeys = sentKeys.filter(
+        (key) => !sheet.headerValues.includes(key),
+      );
+
+      if (missingKeys.length > 0) {
+        throw {
+          name: 'Bad Request',
+          message: `Error: Missing keys in sent data: ${missingKeys.join(
+            ', ',
+          )}`,
+        };
+      }
+
       if (newOrder.Invoice === undefined || newOrder.Invoice === '') {
         const newInvoice = createNewInvoice(existingInvoiceNumbers);
         newOrder.Invoice = newInvoice;
@@ -68,7 +83,6 @@ class MessageController {
         };
       }
 
-      await sheet.addRow(newOrder);
       const parsedObject = JSON.parse(
         JSON.stringify(removeEmptyValues(newOrder)),
       );
@@ -78,6 +92,8 @@ class MessageController {
           replyMessage += `${key}: ${value}\n`;
         }
       }
+
+      await sheet.addRow(newOrder);
       await this.client.sendMessage(this.message.from, replyMessage);
     } catch (error: any) {
       await this.client.sendMessage(this.message.from, error.message);
@@ -110,6 +126,20 @@ class MessageController {
         };
       }
 
+      const sentKeys = Object.keys(updateOrder);
+      const missingKeys = sentKeys.filter(
+        (key) => !sheet.headerValues.includes(key),
+      );
+
+      if (missingKeys.length > 0) {
+        throw {
+          name: 'Bad Request',
+          message: `Error: Missing keys in sent data: ${missingKeys.join(
+            ', ',
+          )}`,
+        };
+      }
+
       if (invoice !== updateOrder.Invoice) {
         const existingOrder = getRowsObject<RawOrder>(rawRows).find(
           (row) => row.Invoice === updateOrder.Invoice,
@@ -125,17 +155,19 @@ class MessageController {
       Object.keys(updateOrder).forEach((key) => {
         requestedOrder.set(key, updateOrder[key]);
       });
-      await requestedOrder.save();
 
       const parsedObject = JSON.parse(
         JSON.stringify(removeEmptyValues(requestedOrder.toObject())),
       );
+
       let replyMessage = `Updating order ${invoice} with data:\n`;
       for (const [key, value] of Object.entries(parsedObject)) {
         if (value != '' || value != undefined) {
           replyMessage += `${key}: ${value}\n`;
         }
       }
+
+      await requestedOrder.save();
       await this.client.sendMessage(this.message.from, replyMessage);
     } catch (error: any) {
       await this.client.sendMessage(this.message.from, error.message);
@@ -175,7 +207,7 @@ class MessageController {
     // Implement logic to handle the "/get-commands" command
     try {
       const replyMessage =
-        'Available commands:\n/send-order\n/get-template <Command>\n/update-order <Invoice Number>\n/get-order <Invoice Number>\n/get-commands';
+        'Available commands:\n1. /send-order\n2. /get-template /<Command>\n3. /update-order <Invoice Number>\n4. /get-order <Invoice Number>\n5. /get-commands';
       await this.client.sendMessage(this.message.from, replyMessage);
     } catch (error: any) {
       await this.client.sendMessage(this.message.from, error.message);
@@ -184,6 +216,15 @@ class MessageController {
 
   async sendTemplate(replyMessage: string) {
     try {
+      await this.client.sendMessage(this.message.from, replyMessage);
+    } catch (error: any) {
+      await this.client.sendMessage(this.message.from, error.message);
+    }
+  }
+
+  async handleUnknownCommand(command: string) {
+    try {
+      let replyMessage = `Unknown command "${command}".\nPlease type "/get-commands" to view the list of available commands.`;
       await this.client.sendMessage(this.message.from, replyMessage);
     } catch (error: any) {
       await this.client.sendMessage(this.message.from, error.message);
