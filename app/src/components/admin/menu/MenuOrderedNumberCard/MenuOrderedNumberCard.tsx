@@ -101,8 +101,6 @@ const MenuOrderedNumberCard = (props: IProps) => {
     const calendarWeeks: string[] = [];
     const result: any = {};
 
-    console.log();
-
     menu.forEach((menuItem) => {
       result[menuItem.key] = {
         name: menuItem.name,
@@ -124,7 +122,6 @@ const MenuOrderedNumberCard = (props: IProps) => {
       filteredInvoices.forEach((invoice) => {
         invoice.menu.forEach((menuItem) => {
           const menuKey = menuItem.key;
-          console.log(menuItem.quantity);
           result[menuKey].data[i] += menuItem.quantity;
         });
       });
@@ -132,8 +129,6 @@ const MenuOrderedNumberCard = (props: IProps) => {
       calendarWeeks.push(`CW ${date.week()}`);
       i++;
     }
-
-    console.log(result);
 
     const resultArray: IRevenueData[] = Object.values<IRevenueData>(result).map(
       (r: IRevenueData) => {

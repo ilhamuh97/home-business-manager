@@ -10,7 +10,7 @@ import {
   MenuProps,
   message,
 } from "antd";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
+import { useAppDispatch } from "@/lib/hooks";
 import { useRouter, usePathname } from "next/navigation";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
@@ -20,6 +20,7 @@ import { getToken, logout } from "@/utils/auth";
 import styles from "./layout.module.scss";
 import { fetchOrders } from "@/lib/features/order/orderSlice";
 import { fetchMenu } from "@/lib/features/menu/menuSlice";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 export default function AdminLayout({
   children, // will be a page or nested layout
@@ -31,48 +32,40 @@ export default function AdminLayout({
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState<boolean>(false);
   const [isAuth, setIsAuth] = useState<boolean>(false);
-  const orderSlice = useAppSelector((state) => state.orderSlice);
-  const menuSlice = useAppSelector((state) => state.menuSlice);
   const { Header, Content, Footer, Sider } = Layout;
 
   useEffect(() => {
-    const checkAuthentication = () => {
-      const token = getToken();
-      if (token) {
-        setIsAuth(true);
-        dispatch(fetchOrders([]));
-        dispatch(fetchMenu([]));
-      } else {
-        setIsAuth(false);
-        router.push("/login");
+    const checkAuthentication = async () => {
+      try {
+        const token = getToken();
+        if (token) {
+          setIsAuth(true);
+          const orders = unwrapResult(await dispatch(fetchOrders([])));
+          const menu = unwrapResult(await dispatch(fetchMenu([])));
+          const error = [menu, orders].find((slice) => {
+            return slice.status === "error" && slice.message !== "";
+          });
+
+          if (error) {
+            if (error.message === "Failed to fetch user data") {
+              logout();
+              router.push("/login");
+            } else {
+              message.error(error.message);
+            }
+          }
+        } else {
+          setIsAuth(false);
+          router.push("/login");
+        }
+      } catch (error: any) {
+        message.error(error.message);
       }
     };
 
     checkAuthentication();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    const error = [menuSlice, orderSlice].find((slice) => {
-      return !slice.success && slice.message !== "";
-    });
-
-    if (error) {
-      if (error.message === "Failed to fetch user data") {
-        logout();
-        router.push("/login");
-      } else {
-        message.error(error.message);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    menuSlice.success,
-    orderSlice.success,
-    menuSlice.message,
-    orderSlice.message,
-    router,
-  ]);
 
   const toggleCollapsed = () => {
     setCollapsed((prevCollapsed) => !prevCollapsed);

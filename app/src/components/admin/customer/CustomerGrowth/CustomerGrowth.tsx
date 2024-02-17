@@ -45,8 +45,6 @@ const CustomerGrowth = (props: IProps) => {
     const currentDate = dayjs();
     let categories: string[] = [];
 
-    console.log(customers);
-
     const lastTwelveMonths = Array.from({ length: 12 }, (_, index) =>
       currentDate.subtract(index, "month"),
     );
@@ -84,8 +82,6 @@ const CustomerGrowth = (props: IProps) => {
     const calendarWeeks: string[] = [];
     const last6Months = dayjs().subtract(6, "month").startOf("week");
     const currentWeek = dayjs().startOf("week");
-
-    console.log(customers);
 
     const data = Array(currentWeek.diff(last6Months, "week") + 1).fill(0);
 
