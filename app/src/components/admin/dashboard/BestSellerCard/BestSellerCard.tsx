@@ -12,7 +12,7 @@ interface IProps {
 }
 
 const BestSellerCard = (props: IProps) => {
-  const { orders } = props;
+  const { orders = [] } = props;
   const [dateRange, setDateRange] = useState<string>("");
   const [menuQuantities, setMenuQuantites] = useState<IMenu[]>([]);
   const GRANULARITY: OpUnitType = "month";

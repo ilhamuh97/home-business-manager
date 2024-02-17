@@ -40,9 +40,13 @@ export default function AdminLayout({
         const token = getToken();
         if (token) {
           setIsAuth(true);
-          const orders = unwrapResult(await dispatch(fetchOrders([])));
-          const menu = unwrapResult(await dispatch(fetchMenu([])));
-          const error = [menu, orders].find((slice) => {
+          const [ordersResultAction, menuResultAction] = await Promise.all([
+            dispatch(fetchOrders([])),
+            dispatch(fetchMenu([])),
+          ]);
+          const ordersResult = unwrapResult(ordersResultAction);
+          const menuResult = unwrapResult(menuResultAction);
+          const error = [menuResult, ordersResult].find((slice) => {
             return slice.status === "error" && slice.message !== "";
           });
 

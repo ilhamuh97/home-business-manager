@@ -49,6 +49,10 @@ const MenuOrderedNumberCard = (props: IProps) => {
   const calculateMonthlyData = useCallback(() => {
     const result: any = {};
 
+    if (menu.length === 0) {
+      return;
+    }
+
     menu.forEach((menuItem) => {
       result[menuItem.key] = {
         name: menuItem.name,
@@ -99,6 +103,9 @@ const MenuOrderedNumberCard = (props: IProps) => {
     const last6Months = dayjs().subtract(6, "month").startOf("week");
     const currentWeek = dayjs().startOf("week");
     const calendarWeeks: string[] = [];
+    if (menu.length === 0) {
+      return;
+    }
     const result: any = {};
 
     menu.forEach((menuItem) => {
@@ -139,7 +146,7 @@ const MenuOrderedNumberCard = (props: IProps) => {
       },
     );
 
-    setMonthlyData({
+    setWeeklyData({
       series: resultArray,
       categories: calendarWeeks,
     });
@@ -177,8 +184,8 @@ const MenuOrderedNumberCard = (props: IProps) => {
       case RevenuDateRange.WEEKLY:
         return (
           <WeeklyChart
-            series={monthlyData.series}
-            categories={monthlyData.categories}
+            series={weeklyData.series}
+            categories={weeklyData.categories}
           />
         );
       case RevenuDateRange.MONTHLY:
