@@ -1,4 +1,3 @@
-import { ICustomer } from "@/models/customer.model";
 import { IOrder } from "@/models/order.model";
 import { generateCustomerInvoiceSummary } from "@/utils/order";
 import { Card, Table } from "antd";

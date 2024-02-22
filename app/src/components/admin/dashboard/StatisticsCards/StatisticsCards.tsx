@@ -104,7 +104,7 @@ const StatisticsCards = (props: IProps) => {
       </Col>
       <Col span={6}>
         <StatisticCard
-          title="Total menus"
+          title="Ordered menus"
           value={getOrderedMenusNumberOfMonth(orders, CURR_DATE)}
           percentage={getPercentageIncrease(
             getOrderedMenusNumberOfMonth(orders, CURR_DATE),

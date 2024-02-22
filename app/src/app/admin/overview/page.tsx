@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Col, Row, Spin, Typography, message } from "antd";
+import { Col, Row, Spin, Typography } from "antd";
 import { useAppSelector } from "@/lib/hooks";
 import BestSellerCard from "@/components/admin/dashboard/BestSellerCard/BestSellerCard";
 import LoyalCustomersCard from "@/components/admin/dashboard/LoyalCustomersCard/LoyalCustomersCard";

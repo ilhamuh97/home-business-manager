@@ -5,10 +5,14 @@ import MenuList from "@/components/admin/menu/MenuList/MenuList";
 import MenuOrderedNumberCard from "@/components/admin/menu/MenuOrderedNumberCard/MenuOrderedNumberCard";
 import StatisticsCards from "@/components/admin/menu/StatisticsCards/StatisticsCards";
 import { useAppSelector } from "@/lib/hooks";
+import { IFeedBack } from "@/models/order.model";
 import { Col, Row, Spin, Typography } from "antd";
 
 export default function Home() {
-  const orders = useAppSelector((state) => state.orderSlice.orders);
+  const orders = useAppSelector((state) => state.orderSlice.orders).filter(
+    (order) =>
+      order.extraInformation.feedback.toLowerCase() !== IFeedBack.CANCELED,
+  );
   const ordersLoading = useAppSelector((state) => state.orderSlice.loading);
   const menu = useAppSelector((state) => state.menuSlice.menu);
   const menuLoading = useAppSelector((state) => state.menuSlice.loading);

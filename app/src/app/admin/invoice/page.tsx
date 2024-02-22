@@ -6,7 +6,6 @@ import OrderStatusCard from "@/components/admin/invoice/OrderStatusCard/OrderSta
 import StatisticsCards from "@/components/admin/invoice/StatisticsCards/StatisticsCards";
 import { useAppSelector } from "@/lib/hooks";
 import { Col, Row, Spin, Typography } from "antd";
-import { useEffect } from "react";
 
 export default function Home() {
   const orders = useAppSelector((state) => state.orderSlice.orders);

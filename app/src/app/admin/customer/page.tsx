@@ -6,14 +6,12 @@ import StatisticsCards from "@/components/admin/customer/StatisticsCards/Statist
 import { useAppSelector } from "@/lib/hooks";
 import { ICustomer } from "@/models/customer.model";
 import { IOrder } from "@/models/order.model";
-import { getOrders } from "@/services/dashboard.service";
-import { handleApiError } from "@/utils/error";
 import { generateCustomerInvoiceSummary } from "@/utils/order";
-import { Col, Row, Spin, Typography, message } from "antd";
+import { Col, Row, Spin, Typography } from "antd";
 import { useEffect, useState } from "react";
 
 export default function Home() {
-  const orders = useAppSelector((state) => state.orderSlice.orders);
+  const orders: IOrder[] = useAppSelector((state) => state.orderSlice.orders);
   const ordersLoading = useAppSelector((state) => state.orderSlice.loading);
   const [customers, setCustomers] = useState<ICustomer[]>([]);
 

@@ -1,7 +1,6 @@
 import { createAppSlice } from "@/lib/utils/createAppSlice";
 import { IMenu } from "@/models/menu.model";
 import { getMenu } from "@/services/dashboard.service";
-import { buildCreateSlice, asyncThunkCreator } from "@reduxjs/toolkit";
 
 interface MenuState {
   loading: boolean;

@@ -1,7 +1,6 @@
 import { createAppSlice } from "@/lib/utils/createAppSlice";
 import { IOrder } from "@/models/order.model";
 import { getOrders } from "@/services/dashboard.service";
-import { buildCreateSlice, asyncThunkCreator } from "@reduxjs/toolkit";
 
 interface OrderState {
   loading: boolean;

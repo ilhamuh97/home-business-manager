@@ -1,15 +1,15 @@
 "use client";
 
 import { useGoogleLogin } from "@react-oauth/google";
-import { Button, Card, Flex, Space, Spin, Typography, message } from "antd";
+import { Button, Card, Flex, Spin, message } from "antd";
 import React, { useState } from "react";
-import styles from "./page.module.scss";
 import { login } from "@/services/auth.service";
 import { setToken } from "@/utils/auth";
 import { useRouter } from "next/navigation";
 import { GoogleOutlined, ArrowLeftOutlined } from "@ant-design/icons";
 import Image from "next/image";
 import Logo from "../../assets/VizConnect.png";
+import styles from "./page.module.scss";
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);

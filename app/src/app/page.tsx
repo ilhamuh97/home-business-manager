@@ -6,9 +6,9 @@ import WhatsappWebJSLogo from "../assets/whatsappWebJs.png";
 import NextJSLogo from "../assets/nextJSLogo.svg";
 import Logo from "../assets/VizConnect.png";
 import { ArrowRightOutlined } from "@ant-design/icons";
-import styles from "./page.module.scss";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import styles from "./page.module.scss";
 
 export default function Home() {
   const { Header, Content, Footer } = Layout;
