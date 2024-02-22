@@ -1,4 +1,7 @@
-import { SettingOutlined, BarChartOutlined } from "@ant-design/icons";
+import { TbFileInvoice } from "react-icons/tb";
+import { IoFastFoodOutline } from "react-icons/io5";
+import { GoPeople } from "react-icons/go";
+import { AiOutlineDashboard } from "react-icons/ai";
 
 export const BASE_URL =
   process.env.NEXT_PUBLIC_DEPLOYMENT === "development"
@@ -6,31 +9,23 @@ export const BASE_URL =
     : process.env.NEXT_PUBLIC_BASE_URL_PROD;
 export const SIDEBAR_ITEMS = [
   {
-    key: "dashboard",
-    icon: <BarChartOutlined />,
-    label: "Dashboard",
-    children: [
-      {
-        key: "/admin/overview",
-        label: "Overview",
-      },
-      {
-        key: "/admin/invoice",
-        label: "Invoice",
-      },
-      {
-        key: "/admin/menu",
-        label: "Menu",
-      },
-      {
-        key: "/admin/customer",
-        label: "Customer",
-      },
-    ],
+    key: "/admin/overview",
+    label: "Overview",
+    icon: <AiOutlineDashboard />,
   },
   {
-    key: "/admin/setting",
-    icon: <SettingOutlined />,
-    label: "Setting",
+    key: "/admin/invoice",
+    label: "Invoice",
+    icon: <TbFileInvoice />,
+  },
+  {
+    key: "/admin/menu",
+    label: "Menu",
+    icon: <IoFastFoodOutline />,
+  },
+  {
+    key: "/admin/customer",
+    label: "Customer",
+    icon: <GoPeople />,
   },
 ];

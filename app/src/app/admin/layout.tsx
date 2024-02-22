@@ -15,12 +15,13 @@ import { useRouter, usePathname } from "next/navigation";
 import { LogoutOutlined, UserOutlined } from "@ant-design/icons";
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
 import { SIDEBAR_ITEMS } from "@/constants/sidebarItems";
-import { MdFoodBank } from "react-icons/md";
+import Logo from "../../assets/VizConnect.svg";
 import { getToken, logout } from "@/utils/auth";
 import styles from "./layout.module.scss";
 import { fetchOrders } from "@/lib/features/order/orderSlice";
 import { fetchMenu } from "@/lib/features/menu/menuSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
+import Image from "next/image";
 
 export default function AdminLayout({
   children, // will be a page or nested layout
@@ -114,7 +115,7 @@ export default function AdminLayout({
         onCollapse={(value) => setCollapsed(value)}
       >
         <div className={`${styles.logo} ${collapsed ? styles.closed : ""}`}>
-          <MdFoodBank />
+          <Image src={Logo} alt="VizConnect png" />
         </div>
         <Menu
           mode="inline"
@@ -130,7 +131,7 @@ export default function AdminLayout({
             {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           </Button>
           <Dropdown menu={menuProps} trigger={["click"]}>
-            <Button icon={<UserOutlined />} />
+            <Button icon={<UserOutlined />} shape="circle" />
           </Dropdown>
         </Header>
         <Content className={styles.content}>{children}</Content>

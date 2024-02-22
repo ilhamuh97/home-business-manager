@@ -1,13 +1,15 @@
 "use client";
 
 import { useGoogleLogin } from "@react-oauth/google";
-import { FaGoogle } from "react-icons/fa";
-import { Button, Card, Space, Spin, message } from "antd";
+import { Button, Card, Flex, Space, Spin, Typography, message } from "antd";
 import React, { useState } from "react";
 import styles from "./page.module.scss";
 import { login } from "@/services/auth.service";
 import { setToken } from "@/utils/auth";
 import { useRouter } from "next/navigation";
+import { GoogleOutlined, ArrowLeftOutlined } from "@ant-design/icons";
+import Image from "next/image";
+import Logo from "../../assets/VizConnect.png";
 
 const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -40,27 +42,39 @@ const Login = () => {
     onError: (error) => console.error("Login failed:", error),
   });
 
+  const handleBackToMain = () => {
+    router.push("/");
+  };
+
   return (
-    <div className={styles.login}>
-      <Spin spinning={isLoading}>
+    <Spin spinning={isLoading}>
+      <div className={styles.login}>
+        <div className={styles.vizConnectlogo}>
+          <Image src={Logo} alt="VizConnect logo" />
+        </div>
         <div className={styles.container}>
-          <Card bordered={false} size="small" style={{ width: "100%" }}>
-            <Button
-              onClick={() => handleLogin()}
-              type="primary"
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignContent: "center",
-              }}
-            >
-              <FaGoogle style={{ margin: "auto" }} />
-              <span style={{ paddingLeft: "1rem" }}>Sign in with Google</span>
-            </Button>
+          <Card bordered={false} style={{ width: "100%" }}>
+            <Flex gap={16} vertical>
+              <Button
+                icon={<GoogleOutlined />}
+                onClick={() => handleLogin()}
+                type="primary"
+              >
+                Sign in with Google
+              </Button>
+              <Button
+                onClick={handleBackToMain}
+                type="primary"
+                icon={<ArrowLeftOutlined />}
+                ghost
+              >
+                Back to main
+              </Button>
+            </Flex>
           </Card>
         </div>
-      </Spin>
-    </div>
+      </div>
+    </Spin>
   );
 };
 

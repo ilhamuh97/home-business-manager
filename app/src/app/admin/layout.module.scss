@@ -32,12 +32,19 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 48px;
-      height: 48px;
-      transition: all 0.3s;
+      font-size: 3.5rem;
+      height: 3.5rem;
+      margin: 1rem 0;
+      img {
+        transition: all 0.3s;
+        height: 4.5rem;
+        width: 4.5rem;
+      }
       &.closed {
-        font-size: 24px;
-        height: 48px;
+        img {
+          height: 3rem;
+          width: 3rem;
+        }
       }
     }
   }
@@ -45,7 +52,7 @@
     .header {
       display: flex;
       justify-content: space-between;
-      padding: 0 10px;
+      padding: 0 1.5rem;
       align-items: center;
       height: 48px;
     }

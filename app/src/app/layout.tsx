@@ -8,8 +8,9 @@ import StoreProvider from "./storeProvider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Home Business Manager",
-  description: "A website application to manage small to medium scale business",
+  title: "VizConnect",
+  description:
+    "A web-based dashboard application designed to visually represent data from Google Sheets, which is ideal for small to medium-sized businesses.",
 };
 
 export default function RootLayout({
