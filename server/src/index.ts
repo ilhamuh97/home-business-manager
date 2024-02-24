@@ -4,9 +4,10 @@ import 'dotenv/config';
 import express from 'express';
 import routes from './routes/routes';
 import cors from 'cors';
-import { Client, LocalAuth } from 'whatsapp-web.js';
-import MessageController from './whatsapp-server/Controllers/MessageControllers';
+import WAWebJS, { Client, LocalAuth } from 'whatsapp-web.js';
+import MessageController from './whatsapp-server/Controllers/MessageController';
 import errorHandler from 'errorhandler';
+import { isAuthenticated } from './whatsapp-server/handlers/AuthHandlers';
 
 const app = express();
 
@@ -30,7 +31,7 @@ const client = new Client({
 });
 const messageController = new MessageController(client);
 
-client.on('qr', (qr) => {
+client.on('qr', (qr: string) => {
   console.log('QR:', qr);
 });
 
@@ -38,8 +39,15 @@ client.on('ready', () => {
   console.log('WhatsApp Bot is ready!');
 });
 
-client.on('message', (message) => {
-  messageController.handleIncomingMessage(message);
+client.on('message', async (message: WAWebJS.Message) => {
+  try {
+    const isAuth = await isAuthenticated(message);
+    if (isAuth) {
+      messageController.handleIncomingMessage(message);
+    }
+  } catch (error: any) {
+    console.error(error);
+  }
 });
 
 app.use(cors());

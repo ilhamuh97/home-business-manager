@@ -1,4 +1,4 @@
-import MessageController from '../Controllers/MessageControllers';
+import MessageController from '../Controllers/MessageController';
 import {
   capitalizeFirstLetter,
   getReadableRawOrder,
