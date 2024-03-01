@@ -1,6 +1,7 @@
 import { Customer, RawCustomer } from '../types/Customer.model';
 import { Menu, RawMenu } from '../types/Menu.model';
 import { RawOrder, Order } from '../types/Order.model';
+import { getNumberOnly } from './prices';
 
 export function menusForOrder(
   order: Partial<RawOrder>,
@@ -114,10 +115,10 @@ export function rawOrderToOrder(
       },
       menu: menus,
       payment: {
-        discount: parseFloat(orderDiscount) || 0,
-        packaging: parseFloat(orderPackaging) || 0,
-        shipping: parseInt(orderShipping) || 0,
-        totalPrice: parseInt(orderPrice) || 0,
+        discount: getNumberOnly(orderDiscount) || 0,
+        packaging: getNumberOnly(orderPackaging) || 0,
+        shipping: getNumberOnly(orderShipping) || 0,
+        totalPrice: getNumberOnly(orderPrice) || 0,
         paymentMethod,
       },
       extraInformation: {

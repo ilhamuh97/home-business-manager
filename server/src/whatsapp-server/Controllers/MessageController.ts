@@ -7,6 +7,7 @@ import {
 import { formatDateToDDMonthYYYY } from '../../utils/date';
 import {
   createNewInvoice,
+  getOrderByInvoice,
   getRowsByPropertyName,
   getRowsObject,
   getValue,
@@ -14,6 +15,7 @@ import {
 import CommandHandler from '../handlers/CommandHandler';
 import { RawOrder } from '../../types/Order.model';
 import { removeEmptyValues } from '../../utils/objectManipulation';
+import { calculateTotalPrice } from '../../utils/prices';
 
 class MessageController {
   client: Client;
@@ -59,7 +61,19 @@ class MessageController {
         };
       }
 
+      if (
+        getValue(newOrder['Phone Number']) === '' ||
+        getValue(newOrder.Name) === ''
+      ) {
+        throw {
+          name: 'Bad Request',
+          message: 'Name and Phone Number cannot be empty!',
+        };
+      }
       if (newOrder.Invoice === undefined || newOrder.Invoice === '') {
+        /**
+         * Handle invoice number
+         */
         const newInvoice = createNewInvoice(existingInvoiceNumbers);
         newOrder.Invoice = newInvoice;
       }
@@ -83,8 +97,16 @@ class MessageController {
         };
       }
 
+      const totalPrice = await calculateTotalPrice(newOrder, doc);
+      newOrder['Total Price'] = String(totalPrice);
+
+      // Add row
+      await sheet.addRow(newOrder);
+
+      // Reply Message
+      const addedOrder = await getOrderByInvoice(doc, newOrder.Invoice);
       const parsedObject = JSON.parse(
-        JSON.stringify(removeEmptyValues(newOrder)),
+        JSON.stringify(removeEmptyValues(addedOrder)),
       );
       let replyMessage = `Send an order ${newOrder.Invoice} with data:\n`;
       for (const [key, value] of Object.entries(parsedObject)) {
@@ -92,8 +114,6 @@ class MessageController {
           replyMessage += `${key}: ${value}\n`;
         }
       }
-
-      await sheet.addRow(newOrder);
       await this.client.sendMessage(this.message.from, replyMessage);
     } catch (error: any) {
       await this.client.sendMessage(this.message.from, error.message);
@@ -156,8 +176,21 @@ class MessageController {
         requestedOrder.set(key, updateOrder[key]);
       });
 
+      // Update Total Price
+      if (getValue(updateOrder['Total Price']) === '') {
+        requestedOrder.set('Total Price', '');
+        const copyRequestedOrder = JSON.parse(
+          JSON.stringify(requestedOrder.toObject()),
+        );
+        const totalPrice = await calculateTotalPrice(copyRequestedOrder, doc);
+        requestedOrder.set('Total Price', String(totalPrice));
+      }
+
+      await requestedOrder.save();
+
+      const getUpdatedOrder = await getOrderByInvoice(doc, invoice);
       const parsedObject = JSON.parse(
-        JSON.stringify(removeEmptyValues(requestedOrder.toObject())),
+        JSON.stringify(removeEmptyValues(getUpdatedOrder)),
       );
 
       let replyMessage = `Updating order ${invoice} with data:\n`;
@@ -166,8 +199,6 @@ class MessageController {
           replyMessage += `${key}: ${value}\n`;
         }
       }
-
-      await requestedOrder.save();
       await this.client.sendMessage(this.message.from, replyMessage);
     } catch (error: any) {
       await this.client.sendMessage(this.message.from, error.message);
@@ -175,7 +206,7 @@ class MessageController {
   }
 
   async handleGetOrderCommand(args: string[]) {
-    // Implement logic to handle the "/get-order/:id" command with the provided ID
+    // Implement logic to handle the "/get-order <invoice>" command with the provided ID
     const invoice = args[0];
     try {
       const doc = await initializeGoogleSheets();

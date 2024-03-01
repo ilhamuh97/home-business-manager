@@ -11,6 +11,9 @@ import { isAuthenticated } from './whatsapp-server/handlers/AuthHandlers';
 
 const app = express();
 
+/**
+ * WA Bot Setup
+ */
 const client = new Client({
   authStrategy: new LocalAuth({
     dataPath: process.env.WA_FOLDER,
@@ -50,11 +53,17 @@ client.on('message', async (message: WAWebJS.Message) => {
   }
 });
 
+/**
+ * BE
+ */
 app.use(cors());
 app.set('port', process.env.PORT || 3000);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+/**
+ * Routes
+ */
 app.use('/', routes);
 
 /**
@@ -71,6 +80,9 @@ app.listen(app.get('port'), () => {
   return console.log(`Server is listening on ${app.get('port')}`);
 });
 
+/**
+ * WA Bot initialize
+ */
 client.initialize();
 
 export default app;

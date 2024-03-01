@@ -9,31 +9,25 @@ import OngoingOrdersCard from "@/components/admin/dashboard/OngoingOrdersCard/On
 import RevenueCard from "@/components/admin/dashboard/RevenueCard/RevenueCard";
 import StatisticsCards from "@/components/admin/dashboard/StatisticsCards/StatisticsCards";
 import { IFeedBack, IOrder } from "@/models/order.model";
-import dayjs from "dayjs";
 
 export default function Home() {
   const orderSlice = useAppSelector((state) => state.orderSlice);
+  const [ordersDone, setOrdersDone] = useState<IOrder[]>([]);
   const [orders, setOrders] = useState<IOrder[]>([]);
-  const [prevYearOrders, setPrevYearOrders] = useState<IOrder[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     setIsLoading(orderSlice.loading);
 
     if (orderSlice.success) {
+      setOrders([...orderSlice.orders]);
+
       const orderDataDone: IOrder[] = orderSlice.orders.filter(
         (order: IOrder) =>
           order.extraInformation.feedback.toLowerCase() === IFeedBack.DONE,
       );
 
-      setOrders([...orderDataDone]);
-
-      const currYear = dayjs();
-      setPrevYearOrders(
-        orderDataDone.filter(
-          (order: IOrder) => dayjs(order.orderDate).diff(currYear, "year") < 1,
-        ),
-      );
+      setOrdersDone([...orderDataDone]);
     }
   }, [orderSlice]);
 
@@ -42,18 +36,18 @@ export default function Home() {
       <Spin tip="Loading" size="small" spinning={isLoading}>
         <Typography.Title level={5}>Overview</Typography.Title>
         <Row gutter={[10, 10]}>
-          <StatisticsCards orders={prevYearOrders} />
+          <StatisticsCards orders={ordersDone} />
           <Col span={16}>
-            <RevenueCard data={orders} />
+            <RevenueCard orders={ordersDone} />
           </Col>
           <Col span={8}>
-            <BestSellerCard orders={prevYearOrders} />
+            <BestSellerCard orders={ordersDone} />
           </Col>
           <Col span={12}>
             <OngoingOrdersCard orders={orders} />
           </Col>
           <Col span={12}>
-            <LoyalCustomersCard orders={orders} />
+            <LoyalCustomersCard orders={ordersDone} />
           </Col>
         </Row>
       </Spin>

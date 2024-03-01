@@ -1,6 +1,8 @@
 'use strict';
 
-import { GoogleSpreadsheetRow } from 'google-spreadsheet';
+import { GoogleSpreadsheet, GoogleSpreadsheetRow } from 'google-spreadsheet';
+import { loadSheetByTitle } from '../middlewares/googleSheets';
+import { RawOrder } from '../types/Order.model';
 
 export function getRowsObject<T>(
   rows: GoogleSpreadsheetRow<any>[],
@@ -56,6 +58,25 @@ export function createNewInvoice(
   return nextInvoiceNumber;
 }
 
+export async function getOrderByInvoice(
+  doc: GoogleSpreadsheet,
+  invoice: string,
+) {
+  try {
+    const sheet = await loadSheetByTitle(doc, 'Order', 2);
+    const requestedOrder = getRowsObject<RawOrder>(
+      await sheet.getRows<RawOrder>(),
+    )?.find((row): boolean => row.Invoice === invoice);
+    return requestedOrder;
+  } catch (error) {
+    return undefined;
+  }
+}
+
 export function getValue(string: string | undefined): string {
   return string || '';
+}
+
+export function getInvoiceType(invoice: string) {
+  return invoice.replace(/[0-9]/g, '');
 }

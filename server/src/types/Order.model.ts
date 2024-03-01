@@ -6,7 +6,7 @@ export interface RawOrder {
   Nr: string;
   Discount: string;
   Shipping: string;
-  TotalPrice: string;
+  'Total Price': string;
   Packaging: string;
   Invoice: string;
   Name: string;
