@@ -15,6 +15,7 @@ export interface RawOrder {
   'Order Date': string;
   'Shipment Date': string;
   'Payment Method': string;
+  Courier: string;
   Information: string;
   FeedBack: string;
   [menu: string]: string;

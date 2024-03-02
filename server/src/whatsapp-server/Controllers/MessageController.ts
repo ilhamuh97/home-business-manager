@@ -1,5 +1,5 @@
 // controllers/messageController.js
-import WAWebJS, { Client, Order } from 'whatsapp-web.js';
+import WAWebJS, { Client } from 'whatsapp-web.js';
 import {
   initializeGoogleSheets,
   loadSheetByTitle,
@@ -13,9 +13,15 @@ import {
   getValue,
 } from '../../utils/googleSheets';
 import CommandHandler from '../handlers/CommandHandler';
-import { RawOrder } from '../../types/Order.model';
-import { removeEmptyValues } from '../../utils/objectManipulation';
+import { Order, RawOrder } from '../../types/Order.model';
+import {
+  rawOrderToOrder,
+  removeEmptyValues,
+} from '../../utils/objectManipulation';
 import { calculateTotalPrice } from '../../utils/prices';
+import { RawMenu } from '../../types/Menu.model';
+import { createInvoiceForCustomer } from '../../utils/stringProcess';
+import dayjs from 'dayjs';
 
 class MessageController {
   client: Client;
@@ -38,7 +44,7 @@ class MessageController {
   async handleSendOrderCommand(args: string[]) {
     // Implement logic to handle the "/send-order" command and process order data
     const newOrder = this.parseOrderData(args);
-    newOrder['Order Date'] = formatDateToDDMonthYYYY(new Date());
+    newOrder['Order Date'] = dayjs().format('DD MMMM YYYY');
     try {
       const doc = await initializeGoogleSheets();
       const sheet = await loadSheetByTitle(doc, 'Order', 2);
@@ -205,9 +211,40 @@ class MessageController {
     }
   }
 
-  async handleGetOrderCommand(args: string[]) {
+  async handleGetInvoiceCommand(params: string[]) {
     // Implement logic to handle the "/get-order <invoice>" command with the provided ID
-    const invoice = args[0];
+    const invoice = params[0];
+    try {
+      const doc = await initializeGoogleSheets();
+      const orderSheet = await loadSheetByTitle(doc, 'Order', 2);
+      const menuSheet = await loadSheetByTitle(doc, 'Menu');
+      const menuRows: Partial<RawMenu>[] = getRowsObject(
+        await menuSheet.getRows<RawMenu>(),
+      );
+      const orderRows: Partial<RawOrder>[] = getRowsObject(
+        await orderSheet.getRows<RawOrder>(),
+      );
+      const orders: Order[] = rawOrderToOrder(orderRows, menuRows);
+      const requestedOrder = orders.find((order) => order.invoice === invoice);
+
+      if (requestedOrder === undefined) {
+        throw {
+          name: 'Not Found',
+          message: `Order with invoice ${invoice} is not found`,
+        };
+      }
+
+      const invoiceText = createInvoiceForCustomer(requestedOrder);
+
+      await this.client.sendMessage(this.message.from, invoiceText);
+    } catch (error: any) {
+      await this.client.sendMessage(this.message.from, error.message);
+    }
+  }
+
+  async handleGetOrderCommand(params: string[]) {
+    // Implement logic to handle the "/get-order <invoice>" command with the provided ID
+    const invoice = params[0];
     try {
       const doc = await initializeGoogleSheets();
       const sheet = await loadSheetByTitle(doc, 'Order', 2);

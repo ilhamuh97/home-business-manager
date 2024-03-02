@@ -7,10 +7,11 @@ export interface RawMenu {
 }
 
 export interface Menu {
-  key?: string;
-  name?: string;
+  key: string;
+  name: string;
+  quantity?: number;
   category?: string;
+  price?: number;
   normalPrice?: number;
   cafePrice?: number;
-  price?: number;
 }

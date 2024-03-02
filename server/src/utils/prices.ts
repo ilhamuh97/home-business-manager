@@ -62,3 +62,38 @@ export function getNumberOnly(price: string | undefined): number {
 
   return 0;
 }
+
+export function getPriceWithQuantity(
+  price: number | string | undefined,
+  quantity: number | string | undefined = '1',
+): string {
+  if (price === undefined || quantity === undefined) {
+    return `Rp${(0).toLocaleString('id-ID')}`;
+  }
+
+  const onlyNumberPrice =
+    typeof price === 'string' ? price.replace(/\D/g, '') : price;
+  const onlyNumberQuantity =
+    typeof quantity === 'string' ? quantity.replace(/\D/g, '') : quantity;
+
+  if (onlyNumberPrice || onlyNumberQuantity) {
+    const sumPrice = Number(onlyNumberPrice) * Number(onlyNumberQuantity);
+    return `Rp${sumPrice.toLocaleString('id-ID')}`;
+  }
+
+  return `Rp${(0).toLocaleString('id-ID')}`;
+}
+
+export function getPrice(price: number | string | undefined): string {
+  if (price === undefined) {
+    return `Rp${(0).toLocaleString('id')}`;
+  }
+
+  const onlyNumberPrice =
+    typeof price === 'string' ? price.replace(/\D/g, '') : price;
+  if (onlyNumberPrice) {
+    return `Rp${Number(onlyNumberPrice).toLocaleString('id-ID')}`;
+  }
+
+  return `Rp${(0).toLocaleString('id-ID')}`;
+}

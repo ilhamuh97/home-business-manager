@@ -33,6 +33,9 @@ class CommandHandler {
       case '/get-commands':
         this.handleGetCommandsCommand(isTemplate);
         break;
+      case '/get-invoice':
+        this.handleGetInvoiceCommand(params, isTemplate);
+        break;
       default:
         this.messageController.handleUnknownCommand(command);
         break;
@@ -90,6 +93,14 @@ class CommandHandler {
     }
   }
 
+  private async handleGetInvoiceCommand(params: string[], isTemplate: boolean) {
+    if (!isTemplate) {
+      this.messageController.handleGetInvoiceCommand(params);
+    } else {
+      this.messageController.sendTemplate(this.generateGetInvoice());
+    }
+  }
+
   private async generateSendOrderTemplate() {
     try {
       const readableData = await getReadableRawOrder();
@@ -119,6 +130,10 @@ class CommandHandler {
 
   private generateGetCommands(): string {
     return '/get-commands';
+  }
+
+  private generateGetInvoice(): string {
+    return '/get-commands <Invoice Number>';
   }
 }
 

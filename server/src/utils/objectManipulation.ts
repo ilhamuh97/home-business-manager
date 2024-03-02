@@ -101,6 +101,7 @@ export function rawOrderToOrder(
       'Payment Method': paymentMethod = '',
       Information: extraInformation = '',
       Feedback: feedback = '',
+      Courier: courier = '',
     } = order;
 
     return {
@@ -122,7 +123,7 @@ export function rawOrderToOrder(
         paymentMethod,
       },
       extraInformation: {
-        courier: orderDiscount,
+        courier: courier,
         information: extraInformation,
         feedback,
       },
