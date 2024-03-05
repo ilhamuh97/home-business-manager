@@ -3,7 +3,7 @@
 import dayjs from 'dayjs';
 
 export function formatDate(dateString: string = '') {
-  if (dateString === '') {
+  if (dateString === '' || dateString === undefined) {
     return dateString;
   }
 

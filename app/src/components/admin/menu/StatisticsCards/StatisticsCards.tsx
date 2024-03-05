@@ -73,7 +73,7 @@ const StatisticsCards = (props: IProps) => {
       <Col span={6}>
         <StatisticCard
           title="Menu ordered"
-          value={menuOrderedCurrMonth}
+          value={menuOrderedCurrMonth.toFixed(2)}
           percentage={getPercentageIncrease(
             menuOrderedCurrMonth,
             menuOrderedLastMonth,
@@ -84,7 +84,7 @@ const StatisticsCards = (props: IProps) => {
       <Col span={6}>
         <StatisticCard
           title="Monthly average"
-          value={overallAverage}
+          value={overallAverage.toFixed(2)}
           hidePercentage={true}
         />
       </Col>

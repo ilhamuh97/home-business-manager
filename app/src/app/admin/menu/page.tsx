@@ -10,8 +10,7 @@ import { Col, Row, Spin, Typography } from "antd";
 
 export default function Home() {
   const orders = useAppSelector((state) => state.orderSlice.orders).filter(
-    (order) =>
-      order.extraInformation.feedback.toLowerCase() !== IFeedBack.CANCELED,
+    (order) => order.extraInformation.feedback.toLowerCase() === IFeedBack.DONE,
   );
   const ordersLoading = useAppSelector((state) => state.orderSlice.loading);
   const menu = useAppSelector((state) => state.menuSlice.menu);

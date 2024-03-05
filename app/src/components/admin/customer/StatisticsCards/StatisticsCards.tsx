@@ -61,14 +61,6 @@ const StatisticsCards = (props: IProps) => {
       </Col>
       <Col span={8}>
         <StatisticCard
-          title="Order in this month"
-          value={ordersThisMonth}
-          hidePercentage={true}
-          valueStyle={{ color: "#0958d9" }}
-        />
-      </Col>
-      <Col span={8}>
-        <StatisticCard
           title="New customers"
           value={newCustomerThisMonth}
           percentage={getPercentageIncrease(
@@ -79,6 +71,14 @@ const StatisticsCards = (props: IProps) => {
           valueStyle={{
             color: "#3f8600",
           }}
+        />
+      </Col>
+      <Col span={8}>
+        <StatisticCard
+          title="Order in this month"
+          value={ordersThisMonth}
+          hidePercentage={true}
+          valueStyle={{ color: "#0958d9" }}
         />
       </Col>
     </>

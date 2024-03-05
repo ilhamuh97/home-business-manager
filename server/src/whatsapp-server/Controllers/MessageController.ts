@@ -48,15 +48,13 @@ class MessageController {
     /**
      * Handle date
      */
-    if (newOrder['Order Date']) {
-      newOrder['Order Date'] = formatDate(newOrder['Order Date']);
-    } else {
-      newOrder['Order Date'] = dayjs().format('DD MMMM YYYY');
-    }
+    newOrder['Order Date'] = newOrder['Order Date']
+      ? formatDate(newOrder['Order Date'])
+      : dayjs().format('DD MMMM YYYY');
 
-    if (newOrder['Shipment Date']) {
-      newOrder['Shipment Date'] = formatDate(newOrder['Shipment Date']);
-    }
+    newOrder['Shipment Date'] = newOrder['Shipment Date']
+      ? formatDate(newOrder['Shipment Date'])
+      : '';
 
     try {
       const doc = await initializeGoogleSheets();
