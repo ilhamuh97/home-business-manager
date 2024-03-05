@@ -10,7 +10,7 @@ class CommandHandler {
     this.messageController = messageController;
   }
 
-  async handleCommand(message: string, isTemplate: boolean = false) {
+  async handle(message: string, isTemplate: boolean = false) {
     const lines = message.trim().split('\n');
     const [commandWithParam, ...args] = lines.map((line) =>
       capitalizeFirstLetter(line.trim()),
@@ -19,32 +19,35 @@ class CommandHandler {
 
     switch (command) {
       case '/send-order':
-        this.handleSendOrderCommand(args, isTemplate);
+        this.handleSendOrder(args, isTemplate);
         break;
       case '/get-template':
-        this.handleGetTemplateCommand(params, isTemplate);
+        this.handleGetTemplate(params, isTemplate);
         break;
       case '/update-order':
-        this.handleUpdateCommand(args, params, isTemplate);
+        this.handleUpdateOrder(args, params, isTemplate);
         break;
       case '/get-order':
-        this.handleGetOrderCommand(params, isTemplate);
+        this.handleGetOrder(params, isTemplate);
         break;
       case '/get-commands':
-        this.handleGetCommandsCommand(isTemplate);
+        this.handleGetCommands(isTemplate);
         break;
       case '/get-invoice':
-        this.handleGetInvoiceCommand(params, isTemplate);
+        this.handleGetInvoice(params, isTemplate);
         break;
       default:
-        this.messageController.handleUnknownCommand(command);
+        this.messageController.handleUnknown(command);
         break;
     }
   }
 
-  private async handleSendOrderCommand(args: string[], isTemplate: boolean) {
+  /**
+   * Hanlders
+   */
+  private async handleSendOrder(args: string[], isTemplate: boolean) {
     if (!isTemplate) {
-      this.messageController.handleSendOrderCommand(args);
+      this.messageController.handleSendOrder(args);
     } else {
       this.messageController.sendTemplate(
         await this.generateSendOrderTemplate(),
@@ -52,24 +55,21 @@ class CommandHandler {
     }
   }
 
-  private async handleGetTemplateCommand(
-    params: string[],
-    isTemplate: boolean,
-  ) {
+  private async handleGetTemplate(params: string[], isTemplate: boolean) {
     if (!isTemplate) {
-      this.messageController.handleGetTemplateCommand(params);
+      this.messageController.handleGetTemplate(params);
     } else {
       this.messageController.sendTemplate(this.generateGetTemplate());
     }
   }
 
-  private async handleUpdateCommand(
+  private async handleUpdateOrder(
     args: string[],
     params: string[],
     isTemplate: boolean,
   ) {
     if (!isTemplate) {
-      this.messageController.handleUpdateCommand(args, params);
+      this.messageController.handleUpdate(args, params);
     } else {
       this.messageController.sendTemplate(
         await this.generateUpdateOrderTemplate(),
@@ -77,29 +77,33 @@ class CommandHandler {
     }
   }
 
-  private async handleGetOrderCommand(params: string[], isTemplate: boolean) {
+  private async handleGetOrder(params: string[], isTemplate: boolean) {
     if (!isTemplate) {
-      this.messageController.handleGetOrderCommand(params);
+      this.messageController.handleGetOrder(params);
     } else {
       this.messageController.sendTemplate(this.generateGetOrderTemplate());
     }
   }
 
-  private async handleGetCommandsCommand(isTemplate: boolean) {
+  private async handleGetCommands(isTemplate: boolean) {
     if (!isTemplate) {
-      this.messageController.handleGetCommandsCommand();
+      this.messageController.handleGetCommands();
     } else {
-      this.messageController.sendTemplate(this.generateGetCommands());
+      this.messageController.sendTemplate(this.generateGetCommandsTemplate());
     }
   }
 
-  private async handleGetInvoiceCommand(params: string[], isTemplate: boolean) {
+  private async handleGetInvoice(params: string[], isTemplate: boolean) {
     if (!isTemplate) {
-      this.messageController.handleGetInvoiceCommand(params);
+      this.messageController.handleGetInvoice(params);
     } else {
-      this.messageController.sendTemplate(this.generateGetInvoice());
+      this.messageController.sendTemplate(this.generateGetInvoiceTemplate());
     }
   }
+
+  /**
+   * Templates
+   */
 
   private async generateSendOrderTemplate() {
     try {
@@ -128,11 +132,11 @@ class CommandHandler {
     return '/get-template /<Command>';
   }
 
-  private generateGetCommands(): string {
+  private generateGetCommandsTemplate(): string {
     return '/get-commands';
   }
 
-  private generateGetInvoice(): string {
+  private generateGetInvoiceTemplate(): string {
     return '/get-invoice <Invoice Number>';
   }
 }

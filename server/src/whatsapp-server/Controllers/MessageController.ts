@@ -35,13 +35,13 @@ class MessageController {
   handleIncomingMessage(message: WAWebJS.Message) {
     if (message.body.startsWith('/')) {
       this.message = message;
-      this.commandHandler.handleCommand(message.body);
+      this.commandHandler.handle(message.body);
     } else {
       console.log('Received message:', message.body);
     }
   }
 
-  async handleSendOrderCommand(args: string[]) {
+  async handleSendOrder(args: string[]) {
     // Implement logic to handle the "/send-order" command and process order data
     const newOrder = this.parseOrderData(args);
 
@@ -54,9 +54,8 @@ class MessageController {
       newOrder['Order Date'] = dayjs().format('DD MMMM YYYY');
     }
 
-    // Parse Order Date
     if (newOrder['Shipment Date']) {
-      newOrder['Shipment Date'] = formatDate(newOrder['Order Date']);
+      newOrder['Shipment Date'] = formatDate(newOrder['Shipment Date']);
     }
 
     try {
@@ -140,13 +139,13 @@ class MessageController {
     }
   }
 
-  handleGetTemplateCommand(args: string[]) {
+  handleGetTemplate(args: string[]) {
     // Implement logic to handle the "/get-template" command
     const command = args[0];
-    this.commandHandler.handleCommand(command, true);
+    this.commandHandler.handle(command, true);
   }
 
-  async handleUpdateCommand(args: string[], params: string[]) {
+  async handleUpdate(args: string[], params: string[]) {
     // Implement logic to handle the "/update/:id" command with the provided ID
     const invoice = params[0];
     const updateOrder = this.parseOrderData(args);
@@ -238,7 +237,7 @@ class MessageController {
     }
   }
 
-  async handleGetInvoiceCommand(params: string[]) {
+  async handleGetInvoice(params: string[]) {
     // Implement logic to handle the "/get-order <invoice>" command with the provided ID
     const invoice = params[0];
     try {
@@ -269,7 +268,7 @@ class MessageController {
     }
   }
 
-  async handleGetOrderCommand(params: string[]) {
+  async handleGetOrder(params: string[]) {
     // Implement logic to handle the "/get-order <invoice>" command with the provided ID
     const invoice = params[0];
     try {
@@ -298,7 +297,7 @@ class MessageController {
     }
   }
 
-  async handleGetCommandsCommand() {
+  async handleGetCommands() {
     // Implement logic to handle the "/get-commands" command
     try {
       const replyMessage =
@@ -317,7 +316,7 @@ class MessageController {
     }
   }
 
-  async handleUnknownCommand(command: string) {
+  async handleUnknown(command: string) {
     try {
       let replyMessage = `Unknown command "${command}".\nPlease type "/get-commands" to view the list of available commands.`;
       await this.client.sendMessage(this.message.from, replyMessage);
