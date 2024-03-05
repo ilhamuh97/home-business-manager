@@ -133,7 +133,7 @@ class CommandHandler {
   }
 
   private generateGetInvoice(): string {
-    return '/get-commands <Invoice Number>';
+    return '/get-invoice <Invoice Number>';
   }
 }
 

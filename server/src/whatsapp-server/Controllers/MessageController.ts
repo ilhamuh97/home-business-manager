@@ -4,7 +4,7 @@ import {
   initializeGoogleSheets,
   loadSheetByTitle,
 } from '../../middlewares/googleSheets';
-import { formatDateToDDMonthYYYY } from '../../utils/date';
+import { formatDate } from '../../utils/date';
 import {
   createNewInvoice,
   getOrderByInvoice,
@@ -44,7 +44,21 @@ class MessageController {
   async handleSendOrderCommand(args: string[]) {
     // Implement logic to handle the "/send-order" command and process order data
     const newOrder = this.parseOrderData(args);
-    newOrder['Order Date'] = dayjs().format('DD MMMM YYYY');
+
+    /**
+     * Handle date
+     */
+    if (newOrder['Order Date']) {
+      newOrder['Order Date'] = formatDate(newOrder['Order Date']);
+    } else {
+      newOrder['Order Date'] = dayjs().format('DD MMMM YYYY');
+    }
+
+    // Parse Order Date
+    if (newOrder['Shipment Date']) {
+      newOrder['Shipment Date'] = formatDate(newOrder['Order Date']);
+    }
+
     try {
       const doc = await initializeGoogleSheets();
       const sheet = await loadSheetByTitle(doc, 'Order', 2);
@@ -136,6 +150,19 @@ class MessageController {
     // Implement logic to handle the "/update/:id" command with the provided ID
     const invoice = params[0];
     const updateOrder = this.parseOrderData(args);
+
+    // Parse Order Date
+    if (updateOrder['Order Date']) {
+      updateOrder['Order Date'] = formatDate(updateOrder['Order Date']);
+    } else {
+      updateOrder['Order Date'] = dayjs().format('DD MMMM YYYY');
+    }
+
+    // Parse Shipment Date
+    if (updateOrder['Shipment Date']) {
+      updateOrder['Shipment Date'] = formatDate(updateOrder['Shipment Date']);
+    }
+
     try {
       const doc = await initializeGoogleSheets();
       const sheet = await loadSheetByTitle(doc, 'Order', 2);
@@ -275,7 +302,7 @@ class MessageController {
     // Implement logic to handle the "/get-commands" command
     try {
       const replyMessage =
-        'Available commands:\n1. /send-order\n2. /get-template /<Command>\n3. /update-order <Invoice Number>\n4. /get-order <Invoice Number>\n5. /get-commands';
+        'Available commands:\n1. /send-order\n2. /get-template /<Command>\n3. /update-order <Invoice Number>\n4. /get-order <Invoice Number>\n5. /get-commands\n6. /get-invoice';
       await this.client.sendMessage(this.message.from, replyMessage);
     } catch (error: any) {
       await this.client.sendMessage(this.message.from, error.message);

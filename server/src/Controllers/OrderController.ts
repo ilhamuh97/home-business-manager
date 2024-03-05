@@ -2,7 +2,6 @@
 
 import { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status-codes';
-import { formatDateToDDMonthYYYY } from '../utils/date';
 import {
   createNewInvoice,
   getRowsByPropertyName,
@@ -16,6 +15,7 @@ import {
 import { Order, RawOrder } from '../types/Order.model';
 import { rawOrderToOrder } from '../utils/objectManipulation';
 import { RawMenu } from '../types/Menu.model';
+import dayjs from 'dayjs';
 
 export class OrderController {
   public static async getAllOrders(
@@ -79,7 +79,7 @@ export class OrderController {
     next: NextFunction,
   ): Promise<void> {
     const newOrder = req.body.data as RawOrder;
-    newOrder['Order Date'] = formatDateToDDMonthYYYY(new Date());
+    newOrder['Order Date'] = dayjs().format('DD MMMM YYYY');
     try {
       const doc = await initializeGoogleSheets();
       const sheet = await loadSheetByTitle(doc, 'Order', 2);

@@ -57,10 +57,7 @@ export function createInvoiceForCustomer(order: Order) {
 *Order:*
 ${order.menu
   ?.map((m) => {
-    return `${m.name} (${m.quantity}) x ${getPriceWithQuantity(
-      m.price,
-      m.quantity,
-    )}`;
+    return `${m.name} (${m.quantity}) x ${getPrice(m.price)}`;
   })
   .join('\n')}
 
