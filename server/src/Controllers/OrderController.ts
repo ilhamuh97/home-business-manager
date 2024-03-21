@@ -12,7 +12,7 @@ import {
   initializeGoogleSheets,
   loadSheetByTitle,
 } from '../middlewares/googleSheets';
-import { Order, RawOrder } from '../types/Order.model';
+import { IOrder, IRawOrder } from '../types/Order.model';
 import { rawOrderToOrder } from '../utils/objectManipulation';
 import { RawMenu } from '../types/Menu.model';
 import dayjs from 'dayjs';
@@ -30,10 +30,10 @@ export class OrderController {
       const menuRows: Partial<RawMenu>[] = getRowsObject(
         await menuSheet.getRows<RawMenu>(),
       );
-      const orderRows: Partial<RawOrder>[] = getRowsObject(
-        await orderSheet.getRows<RawOrder>(),
+      const orderRows: Partial<IRawOrder>[] = getRowsObject(
+        await orderSheet.getRows<IRawOrder>(),
       );
-      const orders: Order[] = rawOrderToOrder(orderRows, menuRows);
+      const orders: IOrder[] = rawOrderToOrder(orderRows, menuRows);
       res.status(200).json({
         data: orders,
         message: 'Successfully get all orders',
@@ -53,8 +53,8 @@ export class OrderController {
     try {
       const doc = await initializeGoogleSheets();
       const sheet = await loadSheetByTitle(doc, 'Order', 2);
-      const requestedOrder = getRowsObject<RawOrder>(
-        await sheet.getRows<RawOrder>(),
+      const requestedOrder = getRowsObject<IRawOrder>(
+        await sheet.getRows<IRawOrder>(),
       )?.find((row): boolean => row.Invoice === invoice);
       if (requestedOrder === undefined) {
         throw {
@@ -78,12 +78,12 @@ export class OrderController {
     res: Response,
     next: NextFunction,
   ): Promise<void> {
-    const newOrder = req.body.data as RawOrder;
+    const newOrder = req.body.data as IRawOrder;
     newOrder['Order Date'] = dayjs().format('DD MMMM YYYY');
     try {
       const doc = await initializeGoogleSheets();
       const sheet = await loadSheetByTitle(doc, 'Order', 2);
-      const orders = getRowsObject<RawOrder>(await sheet.getRows<Order>());
+      const orders = getRowsObject<IRawOrder>(await sheet.getRows<IOrder>());
       const existingInvoiceNumbers = orders.map((order) =>
         getValue(order['Invoice']),
       );
@@ -128,11 +128,11 @@ export class OrderController {
     next: NextFunction,
   ): Promise<void> {
     const invoice = req.params.invoice;
-    const updateOrder = req.body.data as RawOrder;
+    const updateOrder = req.body.data as IRawOrder;
     try {
       const doc = await initializeGoogleSheets();
       const sheet = await loadSheetByTitle(doc, 'Order', 2);
-      const rawRows = await sheet.getRows<RawOrder>();
+      const rawRows = await sheet.getRows<IRawOrder>();
       const requestedOrder = getRowsByPropertyName(
         rawRows,
         'Invoice',
@@ -146,7 +146,7 @@ export class OrderController {
       }
 
       if (invoice !== updateOrder.Invoice) {
-        const existingOrder = getRowsObject<RawOrder>(rawRows).find(
+        const existingOrder = getRowsObject<IRawOrder>(rawRows).find(
           (row) => row.Invoice === updateOrder.Invoice,
         );
         if (existingOrder !== undefined) {
@@ -182,7 +182,7 @@ export class OrderController {
       const doc = await initializeGoogleSheets();
       const sheet = await loadSheetByTitle(doc, 'Order', 2);
       const requestedOrder = getRowsByPropertyName(
-        await sheet.getRows<RawOrder>(),
+        await sheet.getRows<IRawOrder>(),
         'Invoice',
         invoice,
       )[0];

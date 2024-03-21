@@ -3,7 +3,7 @@ import {
   initializeGoogleSheets,
   loadSheetByTitle,
 } from '../middlewares/googleSheets';
-import { Order } from '../types/Order.model';
+import { IOrder } from '../types/Order.model';
 import { getPrice, getPriceWithQuantity } from './prices';
 
 export function capitalizeFirstLetter(sentence: string) {
@@ -32,7 +32,7 @@ export async function getReadableRawOrder() {
   }
 }
 
-export function createInvoiceForCustomer(order: Order) {
+export function createInvoiceForCustomer(order: IOrder) {
   return `*Invoice nr. ${order.invoice}*
 
 *Name:* ${order.customer?.name}

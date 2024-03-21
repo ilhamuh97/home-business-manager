@@ -1,10 +1,10 @@
 import { Customer, RawCustomer } from '../types/Customer.model';
 import { Menu, RawMenu } from '../types/Menu.model';
-import { RawOrder, Order } from '../types/Order.model';
+import { IRawOrder, IOrder } from '../types/Order.model';
 import { getNumberOnly } from './prices';
 
 export function menusForOrder(
-  order: Partial<RawOrder>,
+  order: Partial<IRawOrder>,
   menuRows: Partial<RawMenu>[],
 ): Menu[] {
   return menuRows
@@ -81,9 +81,9 @@ export function rawMenuToMenu(rawMenu: Partial<RawMenu>[]): Menu[] {
 }
 
 export function rawOrderToOrder(
-  orderRows: Partial<RawOrder>[],
+  orderRows: Partial<IRawOrder>[],
   menuRows: Partial<RawMenu>[],
-): Order[] {
+): IOrder[] {
   return orderRows.map((order) => {
     const menus = menusForOrder(order, menuRows);
     const {

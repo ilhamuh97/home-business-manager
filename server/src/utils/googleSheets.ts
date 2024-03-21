@@ -2,7 +2,7 @@
 
 import { GoogleSpreadsheet, GoogleSpreadsheetRow } from 'google-spreadsheet';
 import { loadSheetByTitle } from '../middlewares/googleSheets';
-import { RawOrder } from '../types/Order.model';
+import { IRawOrder } from '../types/Order.model';
 
 export function getRowsObject<T>(
   rows: GoogleSpreadsheetRow<any>[],
@@ -10,11 +10,11 @@ export function getRowsObject<T>(
   return rows.map((row) => row.toObject());
 }
 
-export function getRowsByPropertyName(
+export function getRowsByPropertyName<T extends Record<string, any>>(
   rows: GoogleSpreadsheetRow<any>[],
   propertyName: string,
   searchedValue: string,
-): Partial<any>[] {
+): GoogleSpreadsheetRow<T>[] {
   return rows.filter((row) => row.get(propertyName) === searchedValue);
 }
 
@@ -64,8 +64,8 @@ export async function getOrderByInvoice(
 ) {
   try {
     const sheet = await loadSheetByTitle(doc, 'Order', 2);
-    const requestedOrder = getRowsObject<RawOrder>(
-      await sheet.getRows<RawOrder>(),
+    const requestedOrder = getRowsObject<IRawOrder>(
+      await sheet.getRows<IRawOrder>(),
     )?.find((row): boolean => row.Invoice === invoice);
     return requestedOrder;
   } catch (error) {

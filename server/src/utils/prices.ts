@@ -1,5 +1,5 @@
 import { GoogleSpreadsheet } from 'google-spreadsheet';
-import { RawOrder } from '../types/Order.model';
+import { IRawOrder } from '../types/Order.model';
 import {
   initializeGoogleSheets,
   loadSheetByTitle,
@@ -8,17 +8,12 @@ import { RawMenu } from '../types/Menu.model';
 import { getInvoiceType, getRowsObject, getValue } from './googleSheets';
 
 export async function calculateTotalPrice(
-  order: RawOrder,
+  order: IRawOrder,
   doc: GoogleSpreadsheet | undefined = undefined,
 ) {
   const invoiceType = getInvoiceType(order.Invoice);
-  if (getValue(order['Total Price']) !== '') {
-    return (
-      getNumberOnly(order['Total Price']) -
-      getNumberOnly(order.Discount) +
-      getNumberOnly(order.Shipping) +
-      getNumberOnly(order.Packaging)
-    );
+  if (getValue(order['Total Price']).replace(/\D/g, '') !== '') {
+    return getNumberOnly(order['Total Price']);
   }
   try {
     if (doc === undefined) {

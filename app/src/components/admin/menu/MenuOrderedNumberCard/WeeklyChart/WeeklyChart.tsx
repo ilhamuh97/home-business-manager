@@ -12,8 +12,29 @@ const WeeklyChart = (props: IProps) => {
     series,
     options: {
       chart: {
+        type: "bar",
         height: 350,
-        type: "line",
+        stacked: true,
+        toolbar: {
+          show: true,
+        },
+        zoom: {
+          enabled: true,
+        },
+      },
+      plotOptions: {
+        bar: {
+          horizontal: false,
+          dataLabels: {
+            total: {
+              enabled: true,
+              style: {
+                fontSize: "11px",
+                fontWeight: 900,
+              },
+            },
+          },
+        },
       },
       dataLabels: {
         enabled: true,
@@ -39,7 +60,14 @@ const WeeklyChart = (props: IProps) => {
         },
       },
       xaxis: {
-        categories,
+        categories: categories,
+      },
+      legend: {
+        position: "right",
+        offsetY: 40,
+      },
+      fill: {
+        opacity: 1,
       },
     },
   };
@@ -48,7 +76,7 @@ const WeeklyChart = (props: IProps) => {
     <MyChart
       options={chartData.options}
       series={chartData.series}
-      type="line"
+      type="bar"
       height={300}
       width={"100%"}
     />

@@ -2,7 +2,7 @@
 
 import { Menu } from './Menu.model';
 
-export interface RawOrder {
+export interface IRawOrder {
   Nr: string;
   Discount: string;
   Shipping: string;
@@ -21,7 +21,7 @@ export interface RawOrder {
   [menu: string]: string;
 }
 
-export interface Order {
+export interface IOrder {
   nr?: number;
   invoice?: string;
   orderDate?: string;

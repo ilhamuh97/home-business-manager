@@ -6,14 +6,13 @@ import {
 } from '../../middlewares/googleSheets';
 import { formatDate } from '../../utils/date';
 import {
-  createNewInvoice,
   getOrderByInvoice,
   getRowsByPropertyName,
   getRowsObject,
   getValue,
 } from '../../utils/googleSheets';
 import CommandHandler from '../handlers/CommandHandler';
-import { Order, RawOrder } from '../../types/Order.model';
+import { IOrder, IRawOrder } from '../../types/Order.model';
 import {
   rawOrderToOrder,
   removeEmptyValues,
@@ -22,6 +21,7 @@ import { calculateTotalPrice } from '../../utils/prices';
 import { RawMenu } from '../../types/Menu.model';
 import { createInvoiceForCustomer } from '../../utils/stringProcess';
 import dayjs from 'dayjs';
+import { Order } from '../Classes/Order/Order';
 
 class MessageController {
   client: Client;
@@ -45,80 +45,23 @@ class MessageController {
     // Implement logic to handle the "/send-order" command and process order data
     const newOrder = this.parseOrderData(args);
 
-    /**
-     * Handle date
-     */
-    newOrder['Order Date'] = newOrder['Order Date']
-      ? formatDate(newOrder['Order Date'])
-      : dayjs().format('DD MMMM YYYY');
-
-    newOrder['Shipment Date'] = newOrder['Shipment Date']
-      ? formatDate(newOrder['Shipment Date'])
-      : '';
-
     try {
       const doc = await initializeGoogleSheets();
       const sheet = await loadSheetByTitle(doc, 'Order', 2);
-      const orders = getRowsObject<RawOrder>(await sheet.getRows<Order>());
-      const existingInvoiceNumbers = orders.map((order) =>
-        getValue(order['Invoice']),
-      );
+      const orders = getRowsObject<IRawOrder>(await sheet.getRows<Order>());
 
-      const sentKeys = Object.keys(newOrder);
-      const missingKeys = sentKeys.filter(
-        (key) => !sheet.headerValues.includes(key),
-      );
+      const orderData = new Order(newOrder);
+      const validationCheck = await orderData.validate(orders, doc, sheet);
 
-      if (missingKeys.length > 0) {
+      if (validationCheck) {
         throw {
           name: 'Bad Request',
-          message: `Error: Missing keys in sent data: ${missingKeys.join(
-            ', ',
-          )}`,
+          message: validationCheck,
         };
       }
-
-      if (
-        getValue(newOrder['Phone Number']) === '' ||
-        getValue(newOrder.Name) === ''
-      ) {
-        throw {
-          name: 'Bad Request',
-          message: 'Name and Phone Number cannot be empty!',
-        };
-      }
-      if (newOrder.Invoice === undefined || newOrder.Invoice === '') {
-        /**
-         * Handle invoice number
-         */
-        const newInvoice = createNewInvoice(existingInvoiceNumbers);
-        newOrder.Invoice = newInvoice;
-      }
-
-      const containsOnlyNonNumeric = /^[^0-9]+$/.test(newOrder.Invoice);
-      if (containsOnlyNonNumeric) {
-        const newInvoice = createNewInvoice(
-          existingInvoiceNumbers,
-          newOrder.Invoice,
-        );
-        newOrder.Invoice = newInvoice;
-      }
-
-      const existingOrder = orders.find(
-        (row) => row['Invoice'] === newOrder.Invoice,
-      );
-      if (existingOrder !== undefined) {
-        throw {
-          name: 'Bad Request',
-          message: 'The invoice already exists!',
-        };
-      }
-
-      const totalPrice = await calculateTotalPrice(newOrder, doc);
-      newOrder['Total Price'] = String(totalPrice);
 
       // Add row
-      await sheet.addRow(newOrder);
+      await sheet.addRow(orderData.getRawOrder());
 
       // Reply Message
       const addedOrder = await getOrderByInvoice(doc, newOrder.Invoice);
@@ -163,7 +106,7 @@ class MessageController {
     try {
       const doc = await initializeGoogleSheets();
       const sheet = await loadSheetByTitle(doc, 'Order', 2);
-      const rawRows = await sheet.getRows<RawOrder>();
+      const rawRows = await sheet.getRows<IRawOrder>();
       const requestedOrder = getRowsByPropertyName(
         rawRows,
         'Invoice',
@@ -191,7 +134,7 @@ class MessageController {
       }
 
       if (invoice !== updateOrder.Invoice) {
-        const existingOrder = getRowsObject<RawOrder>(rawRows).find(
+        const existingOrder = getRowsObject<IRawOrder>(rawRows).find(
           (row) => row.Invoice === updateOrder.Invoice,
         );
         if (existingOrder !== undefined) {
@@ -236,7 +179,7 @@ class MessageController {
   }
 
   async handleGetInvoice(params: string[]) {
-    // Implement logic to handle the "/get-order <invoice>" command with the provided ID
+    // Implement logic to handle the "/get-invoice <invoice>" command with the provided ID
     const invoice = params[0];
     try {
       const doc = await initializeGoogleSheets();
@@ -245,10 +188,10 @@ class MessageController {
       const menuRows: Partial<RawMenu>[] = getRowsObject(
         await menuSheet.getRows<RawMenu>(),
       );
-      const orderRows: Partial<RawOrder>[] = getRowsObject(
-        await orderSheet.getRows<RawOrder>(),
+      const orderRows: Partial<IRawOrder>[] = getRowsObject(
+        await orderSheet.getRows<IRawOrder>(),
       );
-      const orders: Order[] = rawOrderToOrder(orderRows, menuRows);
+      const orders: IOrder[] = rawOrderToOrder(orderRows, menuRows);
       const requestedOrder = orders.find((order) => order.invoice === invoice);
 
       if (requestedOrder === undefined) {
@@ -272,8 +215,8 @@ class MessageController {
     try {
       const doc = await initializeGoogleSheets();
       const sheet = await loadSheetByTitle(doc, 'Order', 2);
-      const requestedOrder = getRowsObject<RawOrder>(
-        await sheet.getRows<RawOrder>(),
+      const requestedOrder = getRowsObject<IRawOrder>(
+        await sheet.getRows<IRawOrder>(),
       )?.find((row): boolean => row.Invoice === invoice);
       if (requestedOrder === undefined) {
         throw {
@@ -289,6 +232,34 @@ class MessageController {
           replyMessage += `${key}: ${value}\n`;
         }
       }
+      await this.client.sendMessage(this.message.from, replyMessage);
+    } catch (error: any) {
+      await this.client.sendMessage(this.message.from, error.message);
+    }
+  }
+
+  async handleDeleteOrder(params: string[]) {
+    // Implement logic to handle the "/delete-order <invoice>" command with the provided ID
+    const invoice = params[0];
+    try {
+      const doc = await initializeGoogleSheets();
+      const sheet = await loadSheetByTitle(doc, 'Order', 2);
+      const requestedOrder = getRowsByPropertyName(
+        await sheet.getRows<IRawOrder>(),
+        'Invoice',
+        invoice,
+      )[0];
+
+      if (requestedOrder === undefined) {
+        throw {
+          name: 'Not Found',
+          message: `Order with invoice ${invoice} is not found`,
+        };
+      }
+
+      await requestedOrder.delete();
+      let replyMessage = `Successfully delete an order ${invoice}`;
+
       await this.client.sendMessage(this.message.from, replyMessage);
     } catch (error: any) {
       await this.client.sendMessage(this.message.from, error.message);
@@ -323,7 +294,7 @@ class MessageController {
     }
   }
 
-  private parseOrderData(args: string[]): RawOrder {
+  private parseOrderData(args: string[]): IRawOrder {
     const orderData: any = {};
     args.forEach((arg) => {
       const [key, value] = arg.split(':');

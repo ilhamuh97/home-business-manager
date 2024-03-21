@@ -18,23 +18,26 @@ class CommandHandler {
     const [command, ...params] = commandWithParam.trim().split(' ');
 
     switch (command) {
+      case '/get-order':
+        this.handleGetOrder(params, isTemplate);
+        break;
       case '/send-order':
         this.handleSendOrder(args, isTemplate);
-        break;
-      case '/get-template':
-        this.handleGetTemplate(params, isTemplate);
         break;
       case '/update-order':
         this.handleUpdateOrder(args, params, isTemplate);
         break;
-      case '/get-order':
-        this.handleGetOrder(params, isTemplate);
-        break;
-      case '/get-commands':
-        this.handleGetCommands(isTemplate);
+      case '/delete-order':
+        this.handleDeleteOrder(params, isTemplate);
         break;
       case '/get-invoice':
         this.handleGetInvoice(params, isTemplate);
+        break;
+      case '/get-template':
+        this.handleGetTemplate(params, isTemplate);
+        break;
+      case '/get-commands':
+        this.handleGetCommands(isTemplate);
         break;
       default:
         this.messageController.handleUnknown(command);
@@ -85,6 +88,14 @@ class CommandHandler {
     }
   }
 
+  private async handleDeleteOrder(params: string[], isTemplate: boolean) {
+    if (!isTemplate) {
+      this.messageController.handleDeleteOrder(params);
+    } else {
+      this.messageController.sendTemplate(this.generateDeleteOrderTemplate());
+    }
+  }
+
   private async handleGetCommands(isTemplate: boolean) {
     if (!isTemplate) {
       this.messageController.handleGetCommands();
@@ -126,6 +137,10 @@ class CommandHandler {
 
   private generateGetOrderTemplate(): string {
     return `/get-order <Invoice Number>`;
+  }
+
+  private generateDeleteOrderTemplate(): string {
+    return `/delete-order <Invoice Number>`;
   }
 
   private generateGetTemplate(): string {
