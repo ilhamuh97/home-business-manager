@@ -270,7 +270,7 @@ class MessageController {
     // Implement logic to handle the "/get-commands" command
     try {
       const replyMessage =
-        'Available commands:\n1. /send-order\n2. /get-template /<Command>\n3. /update-order <Invoice Number>\n4. /get-order <Invoice Number>\n5. /get-commands\n6. /get-invoice';
+        'Available commands:\n1. /get-order <Invoice Number>\n2. /send-order\n3. /update-order <Invoice Number>\n4. /delete-order <Invoice Number>\n5. /get-invoice <Invoice Number>\n6. /get-template /<Command>\n7. /get-commands';
       await this.client.sendMessage(this.message.from, replyMessage);
     } catch (error: any) {
       await this.client.sendMessage(this.message.from, error.message);
