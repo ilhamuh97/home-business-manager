@@ -14,6 +14,7 @@ const app = express();
 /**
  * WA Bot Setup
  */
+const wwebVersion = '2.2407.3';
 const client = new Client({
   authStrategy: new LocalAuth({
     dataPath: process.env.WA_FOLDER,
@@ -30,6 +31,10 @@ const client = new Client({
       '--single-process', // <- this one doesn't works in Windows
       '--disable-gpu',
     ],
+  },
+  webVersionCache: {
+    type: 'remote',
+    remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/${wwebVersion}.html`,
   },
 });
 const messageController = new MessageController(client);
