@@ -15,15 +15,23 @@ const app = express();
 /**
  * WA Bot Setup
  */
-const wwebVersion = '2.2411.2';
+const wwebVersion = '2.2412.50';
 const client = new Client({
   authStrategy: new LocalAuth({
     dataPath: process.env.WA_FOLDER,
   }),
   puppeteer: {
     headless: true,
-    executablePath: '/usr/bin/chromium-browser',
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-accelerated-2d-canvas',
+      '--no-first-run',
+      '--no-zygote',
+      '--single-process', // <- this one doesn't works in Windows
+      '--disable-gpu',
+    ],
   },
   webVersionCache: {
     type: 'remote',
