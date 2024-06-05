@@ -15,7 +15,7 @@ const app = express();
 /**
  * WA Bot Setup
  */
-const wwebVersion = '2.2412.50';
+const wwebVersion = '2.2409.0';
 const client = new Client({
   authStrategy: new LocalAuth({
     dataPath: process.env.WA_FOLDER,
