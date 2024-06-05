@@ -8,6 +8,7 @@ import WAWebJS, { Client, LocalAuth } from 'whatsapp-web.js';
 import MessageController from './whatsapp-server/Controllers/MessageController';
 import errorHandler from 'errorhandler';
 import { isAuthenticated } from './whatsapp-server/handlers/AuthHandlers';
+import qrcode from 'qrcode-terminal';
 
 const app = express();
 
@@ -21,17 +22,8 @@ const client = new Client({
   }),
   puppeteer: {
     headless: true,
-    executablePath: '/usr/bin/chromium-browser', // Path to the system-installed Chromium
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-accelerated-2d-canvas',
-      '--no-first-run',
-      '--no-zygote',
-      '--single-process', // <- this one doesn't works in Windows
-      '--disable-gpu',
-    ],
+    executablePath: '/usr/bin/chromium-browser',
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
   },
   webVersionCache: {
     type: 'remote',
@@ -41,6 +33,7 @@ const client = new Client({
 const messageController = new MessageController(client);
 
 client.on('qr', (qr: string) => {
+  qrcode.generate(qr, { small: true });
   console.log('QR:', qr);
 });
 
