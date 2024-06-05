@@ -69,7 +69,7 @@ app.use(express.json());
 /**
  * Routes
  */
-app.use('/', routes);
+app.use('/api', routes);
 
 /**
  * Error Handler. Provides full stack
