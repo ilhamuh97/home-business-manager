@@ -8,7 +8,7 @@ import {
 
 export async function initializeGoogleSheets(): Promise<GoogleSpreadsheet> {
   const auth = new google.auth.GoogleAuth({
-    keyFile: 'credentials.json',
+    keyFile: process.env.CREDENTIALS_PATH,
     scopes: process.env.SCOPES,
   });
 

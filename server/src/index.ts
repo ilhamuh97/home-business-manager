@@ -14,49 +14,49 @@ const app = express();
 /**
  * WA Bot Setup
  */
-const wwebVersion = '2.2412.54';
-const client = new Client({
-  authStrategy: new LocalAuth({
-    dataPath: process.env.WA_FOLDER,
-  }),
-  puppeteer: {
-    headless: true,
-    args: [
-      '--no-sandbox',
-      '--disable-setuid-sandbox',
-      '--disable-dev-shm-usage',
-      '--disable-accelerated-2d-canvas',
-      '--no-first-run',
-      '--no-zygote',
-      '--single-process', // <- this one doesn't works in Windows
-      '--disable-gpu',
-    ],
-  },
-  webVersionCache: {
-    type: 'remote',
-    remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/${wwebVersion}.html`,
-  },
-});
-const messageController = new MessageController(client);
+// const wwebVersion = '2.2412.54';
+// const client = new Client({
+//   authStrategy: new LocalAuth({
+//     dataPath: process.env.WA_FOLDER,
+//   }),
+//   puppeteer: {
+//     headless: true,
+//     args: [
+//       '--no-sandbox',
+//       '--disable-setuid-sandbox',
+//       '--disable-dev-shm-usage',
+//       '--disable-accelerated-2d-canvas',
+//       '--no-first-run',
+//       '--no-zygote',
+//       '--single-process', // <- this one doesn't works in Windows
+//       '--disable-gpu',
+//     ],
+//   },
+//   webVersionCache: {
+//     type: 'remote',
+//     remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/${wwebVersion}.html`,
+//   },
+// });
+// const messageController = new MessageController(client);
 
-client.on('qr', (qr: string) => {
-  console.log('QR:', qr);
-});
+// client.on('qr', (qr: string) => {
+//   console.log('QR:', qr);
+// });
 
-client.on('ready', () => {
-  console.log('WhatsApp Bot is ready!');
-});
+// client.on('ready', () => {
+//   console.log('WhatsApp Bot is ready!');
+// });
 
-client.on('message', async (message: WAWebJS.Message) => {
-  try {
-    const isAuth = await isAuthenticated(message);
-    if (isAuth) {
-      messageController.handleIncomingMessage(message);
-    }
-  } catch (error: any) {
-    console.error(error);
-  }
-});
+// client.on('message', async (message: WAWebJS.Message) => {
+//   try {
+//     const isAuth = await isAuthenticated(message);
+//     if (isAuth) {
+//       messageController.handleIncomingMessage(message);
+//     }
+//   } catch (error: any) {
+//     console.error(error);
+//   }
+// });
 
 /**
  * BE
@@ -88,6 +88,6 @@ app.listen(app.get('port'), () => {
 /**
  * WA Bot initialize
  */
-client.initialize();
+// client.initialize();
 
 export default app;
