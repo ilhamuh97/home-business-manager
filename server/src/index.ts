@@ -21,6 +21,7 @@ const client = new Client({
   }),
   puppeteer: {
     headless: true,
+    executablePath: '/usr/bin/chromium-browser', // Path to the system-installed Chromium
     args: [
       '--no-sandbox',
       '--disable-setuid-sandbox',
