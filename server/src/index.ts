@@ -61,7 +61,19 @@ const app = express();
 /**
  * BE
  */
-app.use(cors());
+// Configure CORS options
+const corsOptions = {
+  origin: [
+    'https://chocobit-dashboard.com',
+    'https://www.chocobit-dashboard.com',
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+// Enable CORS with the specified options
+app.use(cors(corsOptions));
+
 app.set('port', process.env.PORT || 3000);
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
