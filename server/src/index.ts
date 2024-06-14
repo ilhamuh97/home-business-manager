@@ -14,7 +14,7 @@ const app = express();
 
 /**
  * WA Bot Setup
- */
+ * 
 const wwebVersion = '2.2412.50';
 const client = new Client({
   authStrategy: new LocalAuth({
@@ -51,6 +51,7 @@ client.on('message', async (message: WAWebJS.Message) => {
     console.error(error);
   }
 });
+ */
 
 /**
  * BE
@@ -81,7 +82,7 @@ app.listen(app.get('port'), () => {
 
 /**
  * WA Bot initialize
- */
 client.initialize();
+ */
 
 export default app;
