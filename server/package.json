@@ -4,9 +4,9 @@
   "description": "",
   "main": "src/index.ts",
   "scripts": {
-    "start": "tsc && node dist/index.js",
+    "start": "npm run build && node dist/index.js",
     "dev": "nodemon src/index.ts",
-    "build": "tsc",
+    "build": "rimraf ./dist && tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
     "ts.check": "tsc --project tsconfig.json"
   },
@@ -35,6 +35,6 @@
   "devDependencies": {
     "@types/node": "^20.11.17",
     "nodemon": "^3.0.1",
-    "rimraf": "^5.0.5"
+    "rimraf": "^5.0.7"
   }
 }
