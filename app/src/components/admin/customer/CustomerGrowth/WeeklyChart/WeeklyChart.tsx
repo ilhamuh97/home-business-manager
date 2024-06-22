@@ -6,7 +6,7 @@ interface IProps {
   categories: any;
 }
 
-const MonthlyChart = (props: IProps) => {
+const WeeklyChart = (props: IProps) => {
   const { series, categories } = props;
   const chartData = {
     series,
@@ -47,4 +47,4 @@ const MonthlyChart = (props: IProps) => {
   );
 };
 
-export default MonthlyChart;
+export default WeeklyChart;

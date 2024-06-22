@@ -13,9 +13,12 @@ interface IProps {
 interface IDataSource {
   key: number;
   invoice: string;
+  customerName: string;
+  customerPhoneNumber: string;
   orderDate: string;
   shippingDate: string;
   status: string;
+  totalPrice: number;
   menus?: IMenu[];
   customer?: ICustomer;
 }
@@ -28,9 +31,12 @@ const OrderRecordsCard = (props: IProps) => {
       return {
         key: index,
         invoice: order.invoice,
+        customerName: order.customer.name,
+        customerPhoneNumber: order.customer.phoneNumber,
         orderDate: order.orderDate,
         shippingDate: order.shipmentDate,
-        status: order.extraInformation.feedback.toLowerCase() || "No processed",
+        status: order.extraInformation.feedback.toLowerCase() || "no processed",
+        totalPrice: order.payment.totalPrice,
         menus: order.menu,
         customer: order.customer,
       };
@@ -41,20 +47,42 @@ const OrderRecordsCard = (props: IProps) => {
     return `${menu.name} (${menu.quantity})`;
   };
 
-  const dataSourceNumber = (dataSource: IDataSource[]) => {
-    const length = dataSource?.length;
-    if (!dataSource) {
-      return "";
-    }
-
-    return `(${length})`;
-  };
-
   const columns: ColumnsType<IDataSource> = [
     {
       title: "Invoice",
       dataIndex: "invoice",
       key: "invoice",
+      filters: Array.from(new Set(dataSource.map((data) => data.invoice))).map(
+        (invoice) => {
+          return {
+            text: invoice,
+            value: invoice,
+          };
+        },
+      ),
+      filterSearch: true,
+      onFilter: (value, record) => record.invoice.startsWith(value as string),
+    },
+    {
+      title: "Customer Name",
+      dataIndex: "customerName",
+      key: "customerName",
+      filters: Array.from(
+        new Set(dataSource.map((data) => data.customerName)),
+      ).map((name) => {
+        return {
+          text: name,
+          value: name,
+        };
+      }),
+      filterSearch: true,
+      onFilter: (value, record) =>
+        record.customerName.startsWith(value as string),
+    },
+    {
+      title: "Customer Phone Number",
+      dataIndex: "customerPhoneNumber",
+      key: "customerPhoneNumber",
     },
     {
       title: "Order Date",
@@ -85,6 +113,9 @@ const OrderRecordsCard = (props: IProps) => {
           case IFeedBack.CANCELED:
             color = "error";
             break;
+          case IFeedBack.BAKING:
+            color = "cyan";
+            break;
           case IFeedBack.NOSTATUS:
             color = "default";
             break;
@@ -94,6 +125,21 @@ const OrderRecordsCard = (props: IProps) => {
         }
         return <Tag color={color}>{status}</Tag>;
       },
+      filters: Array.from(new Set(dataSource.map((data) => data.status))).map(
+        (feedback) => {
+          return {
+            text: feedback.toLocaleLowerCase() || "no processed",
+            value: feedback.toLocaleLowerCase() || "no processed",
+          };
+        },
+      ),
+      filterSearch: true,
+      onFilter: (value, record) => record.status.startsWith(value as string),
+    },
+    {
+      title: "Total Price",
+      dataIndex: "totalPrice",
+      key: "totalPrice",
     },
   ];
   return (
@@ -108,10 +154,6 @@ const OrderRecordsCard = (props: IProps) => {
         expandable={{
           expandedRowRender: (record) => (
             <>
-              <Typography.Text style={{ marginLeft: 6 }}>
-                {`${record.customer?.name}, ${record.customer?.phoneNumber}`}
-              </Typography.Text>
-              <br />
               <Typography.Text style={{ marginLeft: 6 }}>
                 <b>Order:</b>{" "}
                 {record.menus?.map((menu) => menuToString(menu)).join(", ")}

@@ -61,6 +61,7 @@ const WeeklyChart = (props: IProps) => {
       },
       xaxis: {
         categories: categories,
+        tickAmount: 10,
       },
       legend: {
         position: "right",

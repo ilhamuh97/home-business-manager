@@ -31,5 +31,6 @@ export enum IFeedBack {
   PAID = "paid",
   DELIVERED = "delivered",
   CANCELED = "canceled",
+  BAKING = "baking",
   NOSTATUS = "",
 }

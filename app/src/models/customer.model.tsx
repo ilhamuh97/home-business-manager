@@ -5,4 +5,5 @@ export interface ICustomer {
   joinDate: string;
   lastOrder: string;
   totalInvoices: number;
+  totalSpend?: number;
 }

@@ -4,8 +4,11 @@ import MonthlyChart from "./MonthlyChart/MonthlyChart";
 import { ICustomer } from "@/models/customer.model";
 import dayjs from "dayjs";
 import isBetween from "dayjs/plugin/isBetween";
+import WeeklyChart from "./WeeklyChart/WeeklyChart";
+import isoWeek from "dayjs/plugin/isoWeek";
 
 dayjs.extend(isBetween);
+dayjs.extend(isoWeek);
 
 interface IProps {
   customers: ICustomer[];
@@ -42,7 +45,7 @@ const CustomerGrowth = (props: IProps) => {
   });
 
   const countNewCustomersPerMonth = useCallback(() => {
-    const currentDate = dayjs();
+    let currentDate = dayjs().endOf("year");
     let categories: string[] = [];
 
     const lastTwelveMonths = Array.from({ length: 12 }, (_, index) =>
@@ -80,8 +83,8 @@ const CustomerGrowth = (props: IProps) => {
 
   const countNewCustomersPerWeekly = useCallback(() => {
     const calendarWeeks: string[] = [];
-    const last6Months = dayjs().subtract(6, "month").startOf("week");
-    const currentWeek = dayjs().startOf("week");
+    const last6Months = dayjs().subtract(6, "month").startOf("isoWeek");
+    const currentWeek = dayjs().startOf("isoWeek");
 
     const data = Array(currentWeek.diff(last6Months, "week") + 1).fill(0);
 
@@ -96,8 +99,9 @@ const CustomerGrowth = (props: IProps) => {
         return joinDate.isSame(date, "week");
       });
 
+      console.log("date", date.format("DD-MM-YY").toString(), filteredCustomer);
       data[i] = filteredCustomer.length;
-      calendarWeeks.push(`CW ${date.week()}`);
+      calendarWeeks.push(`${date.startOf("isoWeek").format("DD-MMM-YY")}`);
       i++;
     }
 
@@ -108,7 +112,7 @@ const CustomerGrowth = (props: IProps) => {
       },
     ];
 
-    setMonthlyData({
+    setWeeklyData({
       series: result,
       categories: calendarWeeks,
     });
@@ -137,9 +141,9 @@ const CustomerGrowth = (props: IProps) => {
     switch (selectedDateRange) {
       case RevenuDateRange.WEEKLY:
         return (
-          <MonthlyChart
-            series={monthlyData.series}
-            categories={monthlyData.categories}
+          <WeeklyChart
+            series={weeklyData.series}
+            categories={weeklyData.categories}
           />
         );
       case RevenuDateRange.MONTHLY:

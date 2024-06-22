@@ -7,9 +7,11 @@ import { Card, Radio, RadioChangeEvent } from "antd";
 import MonthlyChart from "./MonthlyChart/MonthlyChart";
 import WeeklyChart from "./WeeklyChart/WeeklyChart";
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore"; // import plugin
+import isoWeek from "dayjs/plugin/isoWeek";
 
 dayjs.extend(weekOfYear);
 dayjs.extend(isSameOrBefore);
+dayjs.extend(isoWeek);
 
 interface IProps {
   menu: IMenu[];
@@ -60,7 +62,7 @@ const MenuOrderedNumberCard = (props: IProps) => {
       };
     });
 
-    let currentDate = dayjs();
+    let currentDate = dayjs().endOf("year");
     let categories = [];
 
     for (let i = 0; i < 12; i++) {
@@ -100,8 +102,8 @@ const MenuOrderedNumberCard = (props: IProps) => {
   }, [menu, orders]);
 
   const calculateWeeklyData = useCallback(() => {
-    const last6Months = dayjs().subtract(6, "month").startOf("week");
-    const currentWeek = dayjs().startOf("week");
+    const last6Months = dayjs().subtract(6, "month").startOf("isoWeek");
+    const currentWeek = dayjs().startOf("isoWeek");
     const calendarWeeks: string[] = [];
     if (menu.length === 0) {
       return;
@@ -133,7 +135,7 @@ const MenuOrderedNumberCard = (props: IProps) => {
         });
       });
 
-      calendarWeeks.push(`CW ${date.week()}`);
+      calendarWeeks.push(`${date.startOf("isoWeek").format("DD-MMM-YY")}`);
       i++;
     }
 

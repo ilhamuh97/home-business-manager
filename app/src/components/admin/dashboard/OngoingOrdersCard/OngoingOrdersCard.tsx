@@ -1,4 +1,3 @@
-import { ICustomer } from "@/models/customer.model";
 import { IMenu } from "@/models/menu.model";
 import { IOrder, IFeedBack } from "@/models/order.model";
 import { Card, Table, Tag, Typography } from "antd";
@@ -13,11 +12,11 @@ interface IProps {
 interface IDataSource {
   key: number;
   invoice: string;
-  orderDate: string;
+  customerName: string;
   shippingDate: string;
   status: string;
   menus?: IMenu[];
-  customer?: ICustomer;
+  customerAddress: string;
 }
 
 const OngoingOrdersCard = (props: IProps) => {
@@ -35,14 +34,14 @@ const OngoingOrdersCard = (props: IProps) => {
       return {
         key: index,
         invoice: order.invoice,
-        orderDate: order.orderDate,
+        customerName: order.customer.name,
         shippingDate: order.shipmentDate,
         status: order.extraInformation.feedback.toLowerCase() || "no processed",
         menus: order.menu,
-        customer: order.customer,
+        customerAddress: order.customer.address,
       };
     })
-    .sort((a, b) => dayjs(a.orderDate).diff(dayjs(b.orderDate)));
+    .sort((a, b) => dayjs(a.shippingDate).diff(dayjs(b.shippingDate)));
 
   const menuToString = (menu: IMenu) => {
     return `${menu.name} (${menu.quantity})`;
@@ -64,9 +63,20 @@ const OngoingOrdersCard = (props: IProps) => {
       key: "invoice",
     },
     {
-      title: "Order Date",
-      dataIndex: "orderDate",
-      key: "orderDate",
+      title: "Customer Name",
+      dataIndex: "customerName",
+      key: "customerName",
+      filters: Array.from(
+        new Set(dataSource.map((order) => order.customerName)),
+      ).map((name) => {
+        return {
+          text: name,
+          value: name,
+        };
+      }),
+      filterSearch: true,
+      onFilter: (value, record) =>
+        record.customerName.startsWith(value as string),
     },
     {
       title: "Shipping Date",
@@ -86,6 +96,9 @@ const OngoingOrdersCard = (props: IProps) => {
           case IFeedBack.DELIVERED:
             color = "warning";
             break;
+          case IFeedBack.BAKING:
+            color = "cyan";
+            break;
           case IFeedBack.NOSTATUS:
             color = "default";
             break;
@@ -95,6 +108,16 @@ const OngoingOrdersCard = (props: IProps) => {
         }
         return <Tag color={color}>{status}</Tag>;
       },
+      filters: Array.from(new Set(dataSource.map((data) => data.status))).map(
+        (feedback) => {
+          return {
+            text: feedback.toLocaleLowerCase() || "no processed",
+            value: feedback.toLocaleLowerCase() || "no processed",
+          };
+        },
+      ),
+      filterSearch: true,
+      onFilter: (value, record) => record.status.startsWith(value as string),
     },
   ];
   return (
@@ -110,7 +133,7 @@ const OngoingOrdersCard = (props: IProps) => {
           expandedRowRender: (record) => (
             <>
               <Typography.Text style={{ marginLeft: 6 }}>
-                {`${record.customer?.name}, ${record.customer?.phoneNumber}`}
+                <b>Address:</b> {`${record.customerAddress}`}
               </Typography.Text>
               <br />
               <Typography.Text style={{ marginLeft: 6 }}>

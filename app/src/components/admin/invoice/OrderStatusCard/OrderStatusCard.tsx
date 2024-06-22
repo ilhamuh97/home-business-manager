@@ -50,6 +50,11 @@ const OrderStatusCard = (props: IProps) => {
     (order) =>
       order.extraInformation.feedback.toLowerCase() === IFeedBack.CANCELED,
   ).length;
+  const inBakingOrders = filteredOrders.filter(
+    (order) =>
+      order.extraInformation.feedback.toLowerCase() === IFeedBack.BAKING,
+  ).length;
+
   const notStatusOrders = filteredOrders.filter(
     (order) =>
       order.extraInformation.feedback.toLowerCase() === IFeedBack.NOSTATUS,
@@ -61,13 +66,21 @@ const OrderStatusCard = (props: IProps) => {
       deliveredOrders,
       paidOrders,
       canceledOrders,
+      inBakingOrders,
       notStatusOrders,
     ],
     options: {
       chart: {
         type: "donut",
       },
-      labels: ["Completed", "Delivered", "Paid", "Canceled", "No Status"],
+      labels: [
+        "Completed",
+        "Delivered",
+        "Paid",
+        "Canceled",
+        "Baking",
+        "No Status",
+      ],
       legend: {
         position: "bottom",
       },

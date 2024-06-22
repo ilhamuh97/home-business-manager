@@ -75,7 +75,7 @@ const StatisticsCards = (props: IProps) => {
       </Col>
       <Col span={8}>
         <StatisticCard
-          title="Order in this month"
+          title="Old customers"
           value={ordersThisMonth}
           hidePercentage={true}
           valueStyle={{ color: "#0958d9" }}

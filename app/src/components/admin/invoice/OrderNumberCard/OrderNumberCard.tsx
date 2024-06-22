@@ -6,9 +6,11 @@ import isSameOrBefore from "dayjs/plugin/isSameOrBefore"; // import plugin
 import MonthlyChart from "./MonthlyChart/MonthlyChart";
 import { IOrder } from "@/models/order.model";
 import WeeklyChart from "./WeeklyChart/WeeklyChart";
+import isoWeek from "dayjs/plugin/isoWeek";
 
 dayjs.extend(weekOfYear);
 dayjs.extend(isSameOrBefore);
+dayjs.extend(isoWeek);
 
 interface IProps {
   data: IOrder[];
@@ -49,7 +51,7 @@ const RevenueCard = (props: IProps) => {
       (order) => order.extraInformation.feedback.toLowerCase() === "done",
     );
 
-    let currentDate = dayjs();
+    let currentDate = dayjs().endOf("year");
     let categories = [];
     let results = [];
 
@@ -81,8 +83,8 @@ const RevenueCard = (props: IProps) => {
   }, [data]);
 
   const calculateWeeklyData = useCallback((): void => {
-    const last6Months = dayjs().subtract(6, "month").startOf("week");
-    const currentWeek = dayjs().startOf("week");
+    const last6Months = dayjs().subtract(6, "month").startOf("isoWeek");
+    const currentWeek = dayjs().startOf("isoWeek");
     const orders: IOrder[] = data;
     const resultArray: number[] = [];
     const calendarWeeks: string[] = [];
@@ -96,7 +98,7 @@ const RevenueCard = (props: IProps) => {
         dayjs(order.orderDate).isSame(date, "week"),
       ).length;
       resultArray.push(totalQuantityThisWeek);
-      calendarWeeks.push(`CW ${date.week()}`);
+      calendarWeeks.push(`${date.startOf("isoWeek").format("DD-MMM-YY")}`);
     }
 
     setWeeklyData({

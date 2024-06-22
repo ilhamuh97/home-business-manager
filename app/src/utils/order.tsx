@@ -37,33 +37,37 @@ export const generateCustomerInvoiceSummary = (
   const customerSummary: any = {};
 
   filteredInvoices.forEach((order) => {
-    const customerName = order.customer.name;
+    const customerPhoneNumber = order.customer.phoneNumber;
 
-    if (!customerSummary[customerName]) {
-      customerSummary[customerName] = {
-        name: customerName,
+    if (!customerSummary[customerPhoneNumber]) {
+      customerSummary[customerPhoneNumber] = {
+        name: order.customer.name,
         phoneNumber: order.customer.phoneNumber,
         address: order.customer.address,
         joinDate: order.orderDate,
         lastOrder: order.orderDate,
         totalInvoices: 1,
+        totalSpend: order.payment.totalPrice,
       };
     } else {
       const lastOrderDate = dayjs(order.orderDate);
       const currentLastOrderDate = dayjs(
-        customerSummary[customerName].lastOrder,
+        customerSummary[customerPhoneNumber].lastOrder,
       );
 
       if (lastOrderDate.isAfter(currentLastOrderDate)) {
-        customerSummary[customerName].lastOrder =
+        customerSummary[customerPhoneNumber].lastOrder =
           lastOrderDate.format("DD MMMM YYYY");
       }
 
-      customerSummary[customerName].totalInvoices += 1;
+      customerSummary[customerPhoneNumber].totalInvoices += 1;
+      customerSummary[customerPhoneNumber].totalSpend +=
+        order.payment.totalPrice;
     }
   });
 
   const summaryArray: ICustomer[] = Object.values(customerSummary);
 
+  console.log(summaryArray);
   return summaryArray;
 };

@@ -3,12 +3,15 @@ import React, { useCallback, useEffect, useState } from "react";
 import dayjs from "dayjs";
 import weekOfYear from "dayjs/plugin/weekOfYear"; // import plugin
 import isSameOrBefore from "dayjs/plugin/isSameOrBefore"; // import plugin
+import isoWeek from "dayjs/plugin/isoWeek";
+
 import MonthlyChart from "./MonthlyChart/MonthlyChart";
 import WeeklyChart from "./WeeklyChart/WeeklyChart";
 import { IOrder } from "@/models/order.model";
 
 dayjs.extend(weekOfYear);
 dayjs.extend(isSameOrBefore);
+dayjs.extend(isoWeek);
 
 interface IProps {
   orders: IOrder[];
@@ -49,7 +52,7 @@ const RevenueCard = (props: IProps) => {
       (order) => order.extraInformation.feedback.toLowerCase() === "done",
     );
 
-    let currentDate = dayjs();
+    let currentDate = dayjs().endOf("year");
     let categories = [];
     let results = [];
 
@@ -84,8 +87,8 @@ const RevenueCard = (props: IProps) => {
   }, [orders]);
 
   const calculateWeeklyData = useCallback((): void => {
-    const last6Months = dayjs().subtract(6, "month").startOf("week");
-    const currentWeek = dayjs().startOf("week");
+    const last6Months = dayjs().subtract(6, "month").startOf("isoWeek");
+    const currentWeek = dayjs().startOf("isoWeek");
     const resultArray: number[] = [];
     const calendarWeeks: string[] = [];
 
@@ -102,7 +105,7 @@ const RevenueCard = (props: IProps) => {
         }, 0);
 
       resultArray.push(totalQuantityThisWeek / 1000);
-      calendarWeeks.push(`CW ${date.week()}`);
+      calendarWeeks.push(`${date.startOf("isoWeek").format("DD-MMM-YY")}`);
     }
 
     setWeeklyData({

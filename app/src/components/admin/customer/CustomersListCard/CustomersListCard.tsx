@@ -19,6 +19,7 @@ interface IDataSource {
   joinDate: string;
   lastOrder: string;
   totalInvoices: number;
+  totalSpend: number;
 }
 
 const CustomersListCard = (props: IProps) => {
@@ -31,9 +32,10 @@ const CustomersListCard = (props: IProps) => {
         name: customer.name,
         phoneNumber: customer.phoneNumber,
         address: customer.address,
-        joinDate: dayjs(customer.joinDate).fromNow(),
+        joinDate: customer.joinDate,
         lastOrder: dayjs(customer.lastOrder).fromNow(),
         totalInvoices: customer.totalInvoices,
+        totalSpend: customer.totalSpend || 0,
       };
     })
     .sort((a, b) => b.totalInvoices - a.totalInvoices);
@@ -43,11 +45,32 @@ const CustomersListCard = (props: IProps) => {
       title: "Name",
       dataIndex: "name",
       key: "name",
+      filters: Array.from(new Set(dataSource.map((data) => data.name))).map(
+        (name) => {
+          return {
+            text: name,
+            value: name,
+          };
+        },
+      ),
+      filterSearch: true,
+      onFilter: (value, record) => record.name.startsWith(value as string),
     },
     {
       title: "Phone Number",
       dataIndex: "phoneNumber",
       key: "phoneNumber",
+      filters: Array.from(
+        new Set(dataSource.map((data) => data.phoneNumber)),
+      ).map((phoneNumber) => {
+        return {
+          text: phoneNumber,
+          value: phoneNumber,
+        };
+      }),
+      filterSearch: true,
+      onFilter: (value, record) =>
+        record.phoneNumber.startsWith(value as string),
     },
     {
       title: "Address",
@@ -68,6 +91,16 @@ const CustomersListCard = (props: IProps) => {
       title: "Total Invoices",
       dataIndex: "totalInvoices",
       key: "totalInvoices",
+      sorter: (a, b) => a.totalInvoices - b.totalInvoices,
+    },
+    {
+      title: "Total Spend Prices",
+      dataIndex: "totalSpend",
+      key: "totalSpend",
+      render: (totalSpend: number) => {
+        return new Intl.NumberFormat("en-ID").format(totalSpend);
+      },
+      sorter: (a, b) => a.totalSpend - b.totalSpend,
     },
   ];
 
